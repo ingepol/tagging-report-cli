@@ -39,6 +39,7 @@ def get_stack_resources(name):
             more_resources, token = botoapi.list_stack_resources(name, token)
             resources.extend(more_resources)
     except Exception as e:
+
         logger.error("Get Stack resources failed! Error: {} Type: {}".format(e.__str__(), type(e).__name__))
     finally:
         return resources
