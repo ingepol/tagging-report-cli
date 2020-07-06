@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,13 +38,23 @@ public class Utils {
             File csvOutputFile = File.createTempFile("report", ".csv");
 
             List<String[]> dataLines = new ArrayList<String[]>();
-            for (
-                    ResourceReport resource: resources) {
+            String[] headers = new String[] {"Type","Resource Name","Tags","Missing Tags","Created by"};
+            dataLines.add(headers);
+
+            Comparator<ResourceReport> compareByTypeThenResorceName = Comparator
+                    .comparing(ResourceReport::getType)
+                    .thenComparing(ResourceReport::getResourceName);
+
+            List<ResourceReport> sortedResources = resources.stream()
+                    .sorted(compareByTypeThenResorceName)
+                    .collect(Collectors.toList());
+
+            for (ResourceReport resource: sortedResources) {
                     dataLines.add(new String[] {
                             resource.getType(),
                             resource.getResourceName(),
-                            resource.getJsonTags(),
-                            "[{}]",
+                            resource.getStringTags(),
+                            resource.getStringMissingTags(),
                             resource.getCreated()
                     });
             }

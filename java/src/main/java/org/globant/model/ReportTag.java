@@ -25,4 +25,12 @@ public class ReportTag {
                 ", Value='" + Value + '\'' +
                 '}';
     }
+
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof ReportTag)) return false;
+        ReportTag o = (ReportTag) obj;
+        return o.getKey() == this.getKey();
+    }
 }
