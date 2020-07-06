@@ -1,10 +1,10 @@
 package org.globant.model;
 
-public class ReportTag {
+public class TagReport {
     private String Key;
     private String Value;
 
-    public ReportTag(String key, String value) {
+    public TagReport(String key, String value) {
         this.Key = key;
         this.Value = value;
     }
@@ -29,8 +29,8 @@ public class ReportTag {
     public boolean equals(Object obj) {
         if (obj == null) return false;
         if (obj == this) return true;
-        if (!(obj instanceof ReportTag)) return false;
-        ReportTag o = (ReportTag) obj;
+        if (!(obj instanceof TagReport)) return false;
+        TagReport o = (TagReport) obj;
         return o.getKey() == this.getKey();
     }
 }

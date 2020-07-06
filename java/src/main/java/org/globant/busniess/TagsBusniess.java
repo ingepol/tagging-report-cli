@@ -2,7 +2,7 @@ package org.globant.busniess;
 
 import org.globant.enums.ClassicTags;
 import org.globant.enums.ModernTags;
-import org.globant.model.ReportTag;
+import org.globant.model.TagReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,20 +16,20 @@ public class TagsBusniess {
 
     private static final Logger LOG = LoggerFactory.getLogger(TagsBusniess.class);
 
-    public List<ReportTag> getModernTags(List<ReportTag> tags){
-        List<ReportTag> reportTags = new ArrayList<ReportTag>();
+    public List<TagReport> getModernTags(List<TagReport> tags){
+        List<TagReport> tagReports = new ArrayList<TagReport>();
         try {
 
         } catch (Exception ex) {
             LOG.error("Moder tags busniess failed!");
         }
-        return reportTags;
+        return tagReports;
     }
 
 
-    public List<ReportTag> getAllTags(List<ReportTag> tags){
-        List<ReportTag> classicTags = new ArrayList<ReportTag>();
-        List<ReportTag> modernTags = new ArrayList<ReportTag>();
+    public List<TagReport> getAllTags(List<TagReport> tags){
+        List<TagReport> classicTags = new ArrayList<TagReport>();
+        List<TagReport> modernTags = new ArrayList<TagReport>();
         try {
             classicTags =
                     tags.stream()
@@ -46,13 +46,13 @@ public class TagsBusniess {
         } catch (Exception ex) {
             LOG.error("Classic tags busniess failed!");
         }
-        List<ReportTag> allTags =  Stream
+        List<TagReport> allTags =  Stream
                 .concat(modernTags.stream(), classicTags.stream())
                 .collect(Collectors.toList());
         return allTags;
     }
 
-    public List<String> getMissingRequiredTags(List<ReportTag> tags){
+    public List<String> getMissingRequiredTags(List<TagReport> tags){
 
         List<String> modernEnumTags = Arrays
                 .stream(ModernTags.values())
@@ -64,10 +64,10 @@ public class TagsBusniess {
         return missingModernTags;
     }
 
-    private List<String> missingTasg(List<ReportTag> tags, List<String> comparableTags){
+    private List<String> missingTasg(List<TagReport> tags, List<String> comparableTags){
         List<String> missingTags = new ArrayList<String>();
         List<String> keyTags = tags.stream()
-                .map(ReportTag::getKey)
+                .map(TagReport::getKey)
                 .collect(Collectors.toList());
 
         for (String comparableTag:comparableTags) {

@@ -2,10 +2,10 @@ package org.globant.enums;
 
 public enum TypesAws {
     DMS_SUBSCRIPTION("AWS::DMS::EventSubscription", "EventSubscription"),
-    ENDPOINT("AWS::DMS::Endpoint", "Endpoint"),
-    INSTANCE("AWS::DMS::ReplicationInstance", "Instance"),
-    SUBNET_GROUP("AWS::DMS::ReplicationSubnetGroup", "SubnetGroup"),
-    TASK("AWS::DMS::ReplicationTask", "Task"),
+    DMS_SUBNET_GROUP("AWS::DMS::ReplicationSubnetGroup", "SubnetGroup"),
+    DMS_TASK("AWS::DMS::ReplicationTask", "Task"),
+    DMS_ENDPOINT("AWS::DMS::Endpoint", "Endpoint"),
+    DMS_INSTANCE("AWS::DMS::ReplicationInstance", "Instance"),
     LAMBDA("AWS::Lambda::Function", "Function"),
     PARAMETER("AWS::SSM::Parameter", "Parameter"),
     PORTAFOLIO("AWS::ServiceCatalog::Portfolio","Portfolio"),

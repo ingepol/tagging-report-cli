@@ -1,6 +1,6 @@
 package org.globant.services;
 
-import org.globant.model.ReportTag;
+import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +30,14 @@ public class SSMService implements IService {
         return ssmService;
     }
 
-    public List<ReportTag> getTagResource(ResourceReport resource){
+    @Override
+    public List<ResourceReport> getAllResource(){
+        return null;
+    }
+
+    public List<TagReport> getTagResource(ResourceReport resource){
         LOG.info("Getting tags from a parameter, Name:  " + resource.getResourceName());
-        List<ReportTag> tagSet = new ArrayList<ReportTag>();
+        List<TagReport> tagSet = new ArrayList<TagReport>();
 
         ListTagsForResourceRequest request = ListTagsForResourceRequest
                 .builder()
@@ -43,7 +48,7 @@ public class SSMService implements IService {
         ListTagsForResourceResponse response = ssm.listTagsForResource(request);
 
         for (Tag tag: response.tagList()) {
-            tagSet.add(new ReportTag(tag.key(), tag.value()));
+            tagSet.add(new TagReport(tag.key(), tag.value()));
         }
         return tagSet;
     }

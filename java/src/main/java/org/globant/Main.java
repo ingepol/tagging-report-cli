@@ -4,7 +4,7 @@ import org.globant.aws.Cloudformation;
 import org.globant.busniess.TagsBusniess;
 import org.globant.enums.TypesAws;
 import org.globant.factory.ServiceFactory;
-import org.globant.model.ReportTag;
+import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
 import org.globant.services.IService;
 import org.globant.utils.Utils;
@@ -23,7 +23,7 @@ public class Main {
     public static void main(String[] args) {
 
         String type = args[0];
-        String filter = args[1];
+        String filter = args.length > 1 ? args[1]:"";
         LOG.info("Type: " + type);
         LOG.info(String.valueOf(type.equals(TypesAws.STACK.getValue())));
         LOG.info("Filter: " + filter);
@@ -36,21 +36,25 @@ public class Main {
             List<Stack> stackSet = cloudformation.listStacks(filter);
             resources = cloudformation.getAllStackResources(stackSet);
         } else {
-            //Get all resources by services
-            LOG.info("Not implemented yet");
+            IService awsService = ServiceFactory.getService(type);
+            if (awsService != null) {
+                resources = awsService.getAllResource();
+            }
         }
 
         for (ResourceReport resource: resources) {
-                IService awsService = ServiceFactory.getService(resource.getType());
-                if (awsService != null) {
-                    List<ReportTag> tags = awsService.getTagResource(resource);
-                    List<ReportTag> requiredTags = tagsBusniess.getAllTags(tags);
-                    List<String> missingTags = tagsBusniess.getMissingRequiredTags(tags);
-                    resource.setTags(requiredTags);
-                    resource.setMissingTags(missingTags);
-                }
-        }
+            IService awsService = ServiceFactory.getService(resource.getType());
+            if (awsService != null) {
+                List<TagReport> tags = awsService.getTagResource(resource);
 
-        Utils.writeCSV(resources);
+                List<TagReport> requiredTags = tagsBusniess.getAllTags(tags);
+                List<String> missingTags = tagsBusniess.getMissingRequiredTags(tags);
+                resource.setTags(requiredTags);
+                resource.setMissingTags(missingTags);
+            }
+        }
+        if (resources.size() > 0) {
+            Utils.writeCSV(resources);
+        }
     }
 }

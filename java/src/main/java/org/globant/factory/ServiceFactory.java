@@ -24,11 +24,13 @@ public class ServiceFactory {
             awsService = LambdaService.getInstance();
         } else if (serviceType.endsWith(TypesAws.TOPIC.getValue())) {
             awsService = TopicService.getInstance();
+        } else if (serviceType.contains("DMS")){
+            awsService = DmsService.getInstance();
         }  else if (
                 serviceType.endsWith(TypesAws.PORTAFOLIO.getValue()) ||
                         serviceType.endsWith(TypesAws.PRODUCT.getValue()) ||
                         serviceType.endsWith(TypesAws.DMS_SUBSCRIPTION.getValue())
-        )
+            )
         {
             LOG.warn("The type: " + serviceType + " has not been impemented, yet") ;
         } else {

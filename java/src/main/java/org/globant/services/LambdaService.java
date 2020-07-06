@@ -1,6 +1,6 @@
 package org.globant.services;
 
-import org.globant.model.ReportTag;
+import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,9 +8,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.GetFunctionRequest;
 import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
-import software.amazon.awssdk.services.lambda.model.ListTagsRequest;
-import software.amazon.awssdk.services.lambda.model.ListTagsResponse;
-import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +32,14 @@ public class LambdaService implements IService {
         return lambdaService;
     }
 
-    public List<ReportTag> getTagResource(ResourceReport resource){
+    @Override
+    public List<ResourceReport> getAllResource() {
+        return null;
+    }
+
+    public List<TagReport> getTagResource(ResourceReport resource){
         LOG.info("Getting tags from a function, Name: " + resource.getResourceName());
-        List<ReportTag> tagSet = new ArrayList<ReportTag>();
+        List<TagReport> tagSet = new ArrayList<TagReport>();
 
         GetFunctionRequest request = GetFunctionRequest
                 .builder()
@@ -47,7 +49,7 @@ public class LambdaService implements IService {
         GetFunctionResponse response = lambda.getFunction(request);
 
         for (Map.Entry<String,String> tag: response.tags().entrySet()) {
-            tagSet.add(new ReportTag(tag.getKey(), tag.getValue()));
+            tagSet.add(new TagReport(tag.getKey(), tag.getValue()));
         }
         return tagSet;
     }

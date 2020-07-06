@@ -73,8 +73,8 @@ public class Cloudformation {
                     if (typeAws.getKey().equals(stackResource.resourceType())){
                         ResourceReport resourceReport = new ResourceReport(
                                 stackResource.resourceType(),
-                                stackResource.physicalResourceId());
-                        resourceReport.setCreated("Pipeline Tool");
+                                stackResource.physicalResourceId(),
+                                "Pipeline Tool");
                         resourcesReport.add(resourceReport);
                         break;
                     }

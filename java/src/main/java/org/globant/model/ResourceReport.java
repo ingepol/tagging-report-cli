@@ -1,8 +1,6 @@
 package org.globant.model;
 
-import com.google.gson.Gson;
-import org.globant.enums.TypesAws;
-
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,13 +8,15 @@ public class ResourceReport {
 
     private String type;
     private String resourceName;
-    private List<ReportTag> tags;
-    private List<String> missingTags;
+    private String arn;
+    private List<TagReport> tags = Collections.emptyList();
+    private List<String> missingTags = Collections.emptyList();
     private String created;
 
-    public ResourceReport(String type, String resourceName){
+    public ResourceReport(String type, String resourceName, String created){
         this.type = type;
         this.resourceName = resourceName;
+        this.created = created;
     }
 
     public String getType() {
@@ -31,7 +31,7 @@ public class ResourceReport {
         return resourceName;
     }
 
-    public List<ReportTag> getTags() {
+    public List<TagReport> getTags() {
         return tags;
     }
 
@@ -40,11 +40,19 @@ public class ResourceReport {
             return "";
         }
         return tags.stream()
-                .map(ReportTag::getKey)
+                .map(TagReport::getKey)
                 .collect(Collectors.joining(","));
     }
 
-    public void setTags(List<ReportTag> tags) {
+    public String getArn() {
+        return arn;
+    }
+
+    public void setArn(String arn) {
+        this.arn = arn;
+    }
+
+    public void setTags(List<TagReport> tags) {
         this.tags = tags;
     }
 
