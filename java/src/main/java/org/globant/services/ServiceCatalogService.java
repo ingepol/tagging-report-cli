@@ -60,7 +60,7 @@ public class ServiceCatalogService implements IService {
         return report;
     }
 
-    public List<TagReport> getTagResourcePortfolio(ResourceReport resource) {
+    private List<TagReport> getTagResourcePortfolio(ResourceReport resource) {
         List<TagReport> report = Collections.emptyList();
         client.describePortfolio(DescribePortfolioRequest.builder().id(resource.getArn()).build()).tags().stream()
                 .map(tag -> new TagReport(tag.key(), tag.value()))
@@ -68,7 +68,7 @@ public class ServiceCatalogService implements IService {
         return report;
     }
 
-    public List<TagReport> getTagResourceProduct(ResourceReport resource) {
+    private List<TagReport> getTagResourceProduct(ResourceReport resource) {
         List<TagReport> report = Collections.emptyList();
         client.describeProvisionedProductPlan(
                 DescribeProvisionedProductPlanRequest.builder().planId(resource.getArn()).build()
