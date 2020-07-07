@@ -1,5 +1,7 @@
 package org.globant.model;
 
+import org.globant.enums.CreatedBy;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,9 +13,9 @@ public class ResourceReport {
     private String arn;
     private List<TagReport> tags = Collections.emptyList();
     private List<String> missingTags = Collections.emptyList();
-    private String created;
+    private CreatedBy created;
 
-    public ResourceReport(String type, String resourceName, String created){
+    public ResourceReport(String type, String resourceName, CreatedBy created){
         this.type = type;
         this.resourceName = resourceName;
         this.created = created;
@@ -29,6 +31,14 @@ public class ResourceReport {
 
     public String getResourceName() {
         return resourceName;
+    }
+
+    public CreatedBy getCreated() {
+        return created;
+    }
+
+    public void setCreated(CreatedBy created) {
+        this.created = created;
     }
 
     public List<TagReport> getTags() {
@@ -70,13 +80,5 @@ public class ResourceReport {
 
     public void setMissingTags(List<String> missingTags) {
         this.missingTags = missingTags;
-    }
-
-    public String getCreated() {
-        return created;
-    }
-
-    public void setCreated(String created) {
-        this.created = created;
     }
 }
