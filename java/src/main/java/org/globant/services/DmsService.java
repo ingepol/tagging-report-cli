@@ -4,6 +4,7 @@ import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServi
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServiceClient;
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServiceClientBuilder;
 import com.amazonaws.services.databasemigrationservice.model.*;
+import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
 import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
@@ -18,7 +19,6 @@ import java.util.List;
 public class DmsService implements IService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DmsService.class);
-    private static final String CREATED = "Custom Lambda";
     private static DmsService dmsService;
     AWSDatabaseMigrationService dms;
     List<ResourceReport> resourceReportSet;
@@ -78,7 +78,7 @@ public class DmsService implements IService {
             ResourceReport resource =  new ResourceReport(
                     TypesAws.DMS_SUBNET_GROUP.getKey(),
                     subnetGroup.getReplicationSubnetGroupIdentifier(),
-                    CREATED
+                    CreatedBy.CUSTOM
             );
             resourceReportSet.add(resource);
         }
@@ -92,7 +92,7 @@ public class DmsService implements IService {
             ResourceReport resource =  new ResourceReport(
                     TypesAws.DMS_ENDPOINT.getKey(),
                     endpoint.getEndpointIdentifier(),
-                    CREATED
+                    CreatedBy.CUSTOM
             );
             resource.setArn(endpoint.getEndpointArn());
             resourceReportSet.add(resource);
@@ -107,7 +107,7 @@ public class DmsService implements IService {
             ResourceReport resource =  new ResourceReport(
                     TypesAws.DMS_INSTANCE.getKey(),
                     repInstance.getReplicationInstanceIdentifier(),
-                    CREATED
+                    CreatedBy.CUSTOM
             );
             resource.setArn(repInstance.getReplicationInstanceArn());
             resourceReportSet.add(resource);
@@ -122,7 +122,7 @@ public class DmsService implements IService {
             ResourceReport resource =  new ResourceReport(
                     TypesAws.DMS_TASK.getKey(),
                     repTask.getReplicationTaskIdentifier(),
-                    "Custom Lambda"
+                    CreatedBy.CUSTOM
             );
             resource.setArn(repTask.getReplicationInstanceArn());
             resourceReportSet.add(resource);
