@@ -54,7 +54,7 @@ public class PortfolioService implements IService {
         ResourceReport report = new ResourceReport(
                 TypesAws.PORTAFOLIO.getKey(),
                 portfolio.displayName(),
-                CreatedBy.CUSTOM
+                CreatedBy.PIPELINE
         );
         report.setArn(portfolio.arn());
         return report;

@@ -52,9 +52,9 @@ public class ProductService implements IService {
 
     private ResourceReport reportProvisionedProduct(ProvisionedProductPlanSummary product) {
         ResourceReport report = new ResourceReport(
-                TypesAws.PORTAFOLIO.getKey(),
+                TypesAws.PRODUCT.getKey(),
                 product.provisionProductName(),
-                CreatedBy.CUSTOM
+                CreatedBy.PIPELINE
         );
         report.setArn(product.planId());
         return report;

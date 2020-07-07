@@ -19,7 +19,6 @@ import java.util.List;
 public class DmsService implements IService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DmsService.class);
-    private static final String CUSTOM = "Custom Lambda";
     private static DmsService dmsService;
     AWSDatabaseMigrationService dms;
     List<ResourceReport> resourceReportSet;
