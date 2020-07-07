@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class SSMService implements IService {
 
     @Override
     public List<ResourceReport> getAllResource(){
-        return null;
+        throw new NotImplementedException();
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
@@ -42,7 +43,7 @@ public class SSMService implements IService {
         ListTagsForResourceRequest request = ListTagsForResourceRequest
                 .builder()
                 .resourceId(resource.getResourceName())
-                .resourceType(resource.getRequestType())
+                .resourceType(resource.getType().getValue())
                 .build();
 
         ListTagsForResourceResponse response = ssm.listTagsForResource(request);

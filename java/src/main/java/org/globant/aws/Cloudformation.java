@@ -73,7 +73,7 @@ public class Cloudformation {
                 for (TypesAws typeAws : TypesAws.values()){
                     if (typeAws.getKey().equals(stackResource.resourceType())){
                         ResourceReport resourceReport = new ResourceReport(
-                                stackResource.resourceType(),
+                                TypesAws.fromKey(stackResource.resourceType()),
                                 stackResource.physicalResourceId(),
                                 CreatedBy.PIPELINE);
                         resourcesReport.add(resourceReport);

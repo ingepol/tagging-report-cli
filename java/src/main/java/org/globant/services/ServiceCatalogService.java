@@ -46,7 +46,7 @@ public class ServiceCatalogService implements IService {
 
     @Override
     public List<TagReport> getTagResource(ResourceReport resource) {
-        switch (valueOf(resource.getType())) {
+        switch (resource.getType()) {
             case PORTAFOLIO:
                 return getTagResourcePortfolio(resource);
             case PRODUCT:
@@ -76,17 +76,17 @@ public class ServiceCatalogService implements IService {
 
     private ResourceReport reportPortfolio(PortfolioDetail portfolio) {
         ResourceReport report = new ResourceReport(
-                PORTAFOLIO.getKey(),
+                PORTAFOLIO,
                 portfolio.displayName(),
                 CreatedBy.PIPELINE
         );
-        report.setArn(portfolio.arn());
+        report.setArn(portfolio.id());
         return report;
     }
 
     private ResourceReport reportProvisionedProduct(ProvisionedProductPlanSummary product) {
         ResourceReport report = new ResourceReport(
-                PRODUCT.getKey(),
+                PRODUCT,
                 product.provisionProductName(),
                 CreatedBy.PIPELINE
         );

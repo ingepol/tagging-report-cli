@@ -51,7 +51,7 @@ public class Utils {
 
             for (ResourceReport resource: sortedResources) {
                     dataLines.add(new String[] {
-                            resource.getType(),
+                            resource.getType().getValue(),
                             resource.getResourceName(),
                             resource.getStringTags(),
                             resource.getStringMissingTags(),

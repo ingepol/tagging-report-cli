@@ -5,29 +5,29 @@ import org.globant.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.globant.enums.TypesAws.*;
+
 public class ServiceFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceFactory.class);
 
-    public static IService getService(String serviceType) {
+    public static IService getService(TypesAws serviceType) {
         if (serviceType == null) {
             return null;
         }
         IService awsService = null;
-        if (serviceType.endsWith(TypesAws.PARAMETER.getValue())) {
+        if (serviceType.equals(PARAMETER)) {
             awsService = SSMService.getInstance();
-        } else if (serviceType.endsWith(TypesAws.ROLE.getValue())) {
+        } else if (serviceType.equals(ROLE)) {
             awsService = RoleService.getInstance();
-        } else if (serviceType.endsWith(TypesAws.LAMBDA.getValue())) {
+        } else if (serviceType.equals(LAMBDA)) {
             awsService = LambdaService.getInstance();
-        } else if (serviceType.endsWith(TypesAws.TOPIC.getValue())) {
+        } else if (serviceType.equals(TOPIC)) {
             awsService = TopicService.getInstance();
-        } else if (serviceType.contains("DMS")) {
+        } else if (serviceType.getKey().contains("DMS")) {
             awsService = DmsService.getInstance();
-        } else if (TypesAws.PRODUCT.getKey().equals(serviceType) || TypesAws.PORTAFOLIO.getKey().equals(serviceType)) {
+        } else if  (serviceType.getKey().contains("ServiceCatalog")) {
             awsService = ServiceCatalogService.getInstance();
-        }  else if (serviceType.endsWith(TypesAws.DMS_SUBSCRIPTION.getValue())) {
-            LOG.warn("The type: " + serviceType + " has not been impemented, yet") ;
         } else {
             LOG.warn("The type: " + serviceType + " don't support tagging") ;
         }
