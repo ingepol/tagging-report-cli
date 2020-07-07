@@ -55,7 +55,7 @@ public class Utils {
                             resource.getResourceName(),
                             resource.getStringTags(),
                             resource.getStringMissingTags(),
-                            resource.getCreated()
+                            resource.getCreated().name()
                     });
             }
 
