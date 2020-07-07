@@ -57,7 +57,7 @@ public class ServiceCatalogService implements IService {
     }
 
     private List<TagReport> getTagResourcePortfolio(ResourceReport resource) {
-        List<TagReport> report = Collections.emptyList();
+        List<TagReport> report = new ArrayList<>();
         client.describePortfolio(DescribePortfolioRequest.builder().id(resource.getArn()).build()).tags().stream()
                 .map(tag -> new TagReport(tag.key(), tag.value()))
                 .forEach(report::add);
@@ -65,7 +65,7 @@ public class ServiceCatalogService implements IService {
     }
 
     private List<TagReport> getTagResourceProduct(ResourceReport resource) {
-        List<TagReport> report = Collections.emptyList();
+        List<TagReport> report = new ArrayList<>();
         client.describeProvisionedProductPlan(
                 DescribeProvisionedProductPlanRequest.builder().planId(resource.getArn()).build()
         ).provisionedProductPlanDetails().tags().stream()

@@ -1,4 +1,3 @@
-
 #!/bin/bash
 if [[ -z $* ]] ; then
     echo 'Supply the name of one of the example classes as an argument.'
