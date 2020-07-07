@@ -1,6 +1,7 @@
 package org.globant.model;
 
 import org.globant.enums.CreatedBy;
+import org.globant.enums.TypesAws;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,25 +9,21 @@ import java.util.stream.Collectors;
 
 public class ResourceReport {
 
-    private String type;
+    private TypesAws type;
     private String resourceName;
     private String arn;
     private List<TagReport> tags = Collections.emptyList();
     private List<String> missingTags = Collections.emptyList();
     private CreatedBy created;
 
-    public ResourceReport(String type, String resourceName, CreatedBy created){
+    public ResourceReport(TypesAws type, String resourceName, CreatedBy created){
         this.type = type;
         this.resourceName = resourceName;
         this.created = created;
     }
 
-    public String getType() {
+    public TypesAws getType() {
         return type;
-    }
-
-    public String getRequestType() {
-        return type.split("::")[2];
     }
 
     public String getResourceName() {

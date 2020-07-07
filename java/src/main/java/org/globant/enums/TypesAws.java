@@ -28,4 +28,22 @@ public enum TypesAws {
     public String getValue() {
         return value;
     }
+
+    public static TypesAws fromKey(String key) {
+        for (TypesAws type : TypesAws.values()) {
+            if (type.getKey().equalsIgnoreCase(key)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    public static TypesAws fromVale(String key) {
+        for (TypesAws type : TypesAws.values()) {
+            if (type.getValue().equalsIgnoreCase(key)) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

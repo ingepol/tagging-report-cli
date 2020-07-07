@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.iam.model.ListRoleTagsRequest;
 import software.amazon.awssdk.services.iam.model.ListRoleTagsResponse;
 import software.amazon.awssdk.services.iam.model.Tag;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class RoleService implements IService{
 
     @Override
     public List<ResourceReport> getAllResource() {
-        return null;
+        throw new NotImplementedException();
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){

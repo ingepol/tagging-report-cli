@@ -15,6 +15,8 @@ import software.amazon.awssdk.services.cloudformation.model.Stack;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.globant.enums.TypesAws.*;
+
 
 public class Main {
 
@@ -22,15 +24,19 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String type = args[0];
+        TypesAws type = TypesAws.fromVale(args[0]);
         String filter = args.length > 1 ? args[1]:"";
-        LOG.info("Type: " + type);
-        LOG.info(String.valueOf(type.equals(TypesAws.STACK.getValue())));
+        if (type == null){
+            LOG.error("The type doesn't exist or it's not implemented, yet");
+            System.exit(0);
+        }
+        LOG.info("Type: " + type.getValue());
+        LOG.info(String.valueOf(type.equals(STACK.getValue())));
         LOG.info("Filter: " + filter);
         List<ResourceReport> resources = new ArrayList<ResourceReport>();
         TagsBusniess tagsBusniess = new TagsBusniess();
 
-        if (type.equals(TypesAws.STACK.getValue())) {
+        if (type.equals(STACK)) {
             LOG.info("Getting stacks...");
             Cloudformation cloudformation = new Cloudformation();
             List<Stack> stackSet = cloudformation.listStacks(filter);

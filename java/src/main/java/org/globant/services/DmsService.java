@@ -1,7 +1,6 @@
 package org.globant.services;
 
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationService;
-import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServiceClient;
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServiceClientBuilder;
 import com.amazonaws.services.databasemigrationservice.model.*;
 import org.globant.enums.CreatedBy;
@@ -10,11 +9,11 @@ import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.regions.Region;
-
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.globant.enums.TypesAws.*;
 
 public class DmsService implements IService {
 
@@ -54,29 +53,37 @@ public class DmsService implements IService {
     public List<TagReport> getTagResource(ResourceReport resource) {
         LOG.info("Getting tags from " + resource.getType() + ", Identifier: " + resource.getResourceName());
         List<TagReport> tagSet = new ArrayList<TagReport>();
-        String arn = resource.getArn() != null ? resource.getArn() : resource.getResourceName();
-        ListTagsForResourceResult result = getTagsbyArn(arn);
+        String arn = getOrBuildArnResource(resource);
+        ListTagsForResourceRequest request = new ListTagsForResourceRequest().withResourceArn(arn);
+        ListTagsForResourceResult result = dms.listTagsForResource(request);
         for (Tag tag: result.getTagList()) {
             tagSet.add(new TagReport(tag.getKey(), tag.getValue()));
         }
         return tagSet;
     }
 
-    private ListTagsForResourceResult getTagsbyArn(String arn){
+    private String getOrBuildArnResource(ResourceReport resource){
+        TypesAws type = resource.getType();
+        StringBuilder arn = new StringBuilder("arn:aws:dms:us-west-2:");
+        arn.append(StsService.getInstance().getCurrentAccount());
+        if (type.equals(DMS_ENDPOINT) || type.equals(DMS_INSTANCE) ||
+                type.equals(DMS_TASK)){
+            return resource.getArn();
+        }
+        else if (type.equals(DMS_SUBNET_GROUP.getKey()))
+            arn.append(":subgrp:");
+        else
+            arn.append(":es:");
 
-        String idAccunt = StsService.getInstance().getCurrentAccount();
-        String arnRequest = arn.contains("arn:aws:dms") ? arn:"arn:aws:dms:us-west-2:"+idAccunt+":subgrp:" + arn;
-        ListTagsForResourceRequest request = new ListTagsForResourceRequest().withResourceArn(arnRequest);
-        ListTagsForResourceResult result = dms.listTagsForResource(request);
-        return result;
+        return arn.append(resource.getResourceName()).toString();
     }
 
     private void addResourceSubnetGroup (){
-        DescribeReplicationSubnetGroupsRequest requestsg = new DescribeReplicationSubnetGroupsRequest();
-        DescribeReplicationSubnetGroupsResult resultSubnetGroup = dms.describeReplicationSubnetGroups(requestsg);
+        DescribeReplicationSubnetGroupsResult resultSubnetGroup = dms
+                .describeReplicationSubnetGroups(new DescribeReplicationSubnetGroupsRequest());
         for (ReplicationSubnetGroup subnetGroup: resultSubnetGroup.getReplicationSubnetGroups()) {
             ResourceReport resource =  new ResourceReport(
-                    TypesAws.DMS_SUBNET_GROUP.getKey(),
+                    DMS_SUBNET_GROUP,
                     subnetGroup.getReplicationSubnetGroupIdentifier(),
                     CreatedBy.CUSTOM
             );
@@ -85,12 +92,11 @@ public class DmsService implements IService {
     }
 
     private void addResourcesEndpoints(){
-        DescribeEndpointsRequest requestEndpoints = new DescribeEndpointsRequest();
-        DescribeEndpointsResult resultEndpoints = dms.describeEndpoints(requestEndpoints);
+        DescribeEndpointsResult resultEndpoints = dms.describeEndpoints(new DescribeEndpointsRequest());
 
         for (Endpoint endpoint: resultEndpoints.getEndpoints()) {
             ResourceReport resource =  new ResourceReport(
-                    TypesAws.DMS_ENDPOINT.getKey(),
+                    DMS_ENDPOINT,
                     endpoint.getEndpointIdentifier(),
                     CreatedBy.CUSTOM
             );
@@ -100,12 +106,12 @@ public class DmsService implements IService {
     }
 
     private void addResourcesInstances(){
-        DescribeReplicationInstancesRequest resuest = new DescribeReplicationInstancesRequest();
-        DescribeReplicationInstancesResult result = dms.describeReplicationInstances(resuest);
+        DescribeReplicationInstancesResult result = dms
+                .describeReplicationInstances(new DescribeReplicationInstancesRequest());
 
         for (ReplicationInstance repInstance: result.getReplicationInstances()) {
             ResourceReport resource =  new ResourceReport(
-                    TypesAws.DMS_INSTANCE.getKey(),
+                    DMS_INSTANCE,
                     repInstance.getReplicationInstanceIdentifier(),
                     CreatedBy.CUSTOM
             );
@@ -115,12 +121,11 @@ public class DmsService implements IService {
     }
 
     private void addResourcesTask(){
-        DescribeReplicationTasksRequest resuest = new DescribeReplicationTasksRequest();
-        DescribeReplicationTasksResult result = dms.describeReplicationTasks(resuest);
+        DescribeReplicationTasksResult result = dms.describeReplicationTasks(new DescribeReplicationTasksRequest());
 
         for (ReplicationTask repTask: result.getReplicationTasks()) {
             ResourceReport resource =  new ResourceReport(
-                    TypesAws.DMS_TASK.getKey(),
+                    DMS_TASK,
                     repTask.getReplicationTaskIdentifier(),
                     CreatedBy.CUSTOM
             );

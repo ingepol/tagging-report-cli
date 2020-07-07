@@ -8,6 +8,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.GetFunctionRequest;
 import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class LambdaService implements IService {
 
     @Override
     public List<ResourceReport> getAllResource() {
-        return null;
+        throw new NotImplementedException();
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){

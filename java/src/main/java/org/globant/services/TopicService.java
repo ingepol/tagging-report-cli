@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.sns.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.sns.model.Tag;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class TopicService implements IService {
 
     @Override
     public List<ResourceReport> getAllResource() {
-        return null;
+        throw new NotImplementedException();
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
