@@ -46,18 +46,14 @@ public class ServiceCatalogService implements IService {
 
     @Override
     public List<TagReport> getTagResource(ResourceReport resource) {
-        List<TagReport> report;
         switch (valueOf(resource.getType())) {
             case PORTAFOLIO:
-                report = getTagResourcePortfolio(resource);
-                break;
+                return getTagResourcePortfolio(resource);
             case PRODUCT:
-                report = getTagResourceProduct(resource);
-                break;
+                return getTagResourceProduct(resource);
             default:
                 throw new UnsupportedOperationException("Unknown resource type: " + resource.getType());
         }
-        return report;
     }
 
     private List<TagReport> getTagResourcePortfolio(ResourceReport resource) {
