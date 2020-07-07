@@ -26,7 +26,7 @@ public class ServiceCatalogService implements IService {
         return SERVICE;
     }
 
-    private ServiceCatalogClient client = ServiceCatalogClient.builder().region(Region.US_WEST_2).build();
+    private final ServiceCatalogClient client = ServiceCatalogClient.builder().region(Region.US_WEST_2).build();
 
     @Override
     public List<ResourceReport> getAllResource() {
