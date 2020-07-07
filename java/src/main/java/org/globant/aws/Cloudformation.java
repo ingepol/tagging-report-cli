@@ -1,5 +1,6 @@
 package org.globant.aws;
 
+import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
 import org.globant.model.ResourceReport;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class Cloudformation {
                         ResourceReport resourceReport = new ResourceReport(
                                 stackResource.resourceType(),
                                 stackResource.physicalResourceId(),
-                                "Pipeline Tool");
+                                CreatedBy.PIPELINE);
                         resourcesReport.add(resourceReport);
                         break;
                     }
