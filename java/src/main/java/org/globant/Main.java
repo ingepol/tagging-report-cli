@@ -34,7 +34,7 @@ public class Main {
         if (!filter.isEmpty())
             LOG.info("Filter: " + filter);
 
-        List<ResourceReport> resources = new ArrayList<ResourceReport>();
+        List<ResourceReport> resources = new ArrayList<>();
         TagsBusniess tagsBusniess = new TagsBusniess();
 
         if (type.equals(STACK)) {

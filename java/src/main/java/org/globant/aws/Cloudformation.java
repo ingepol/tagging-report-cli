@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.globant.enums.TypesAws.*;
-
 public class Cloudformation {
 
     private static final Logger LOG = LoggerFactory.getLogger(Cloudformation.class);
@@ -32,7 +30,7 @@ public class Cloudformation {
 
     public List<Stack> listStacks(String filterStacks) {
 
-        List<Stack> stackSuccessSet = new ArrayList<Stack>();
+        List<Stack> stackSuccessSet = new ArrayList<>();
 
         try {
             // get stacks
@@ -64,7 +62,7 @@ public class Cloudformation {
     }
 
     public List<ResourceReport> getAllStackResources(List<Stack> stacks){
-        List<ResourceReport> resourcesReport = new ArrayList<ResourceReport>();
+        List<ResourceReport> resourcesReport = new ArrayList<>();
         for (Stack stack: stacks) {
             LOG.info("Getting resources from " + stack.stackName());
             DescribeStackResourcesRequest describeStackResourcesRequest = DescribeStackResourcesRequest
@@ -73,37 +71,30 @@ public class Cloudformation {
                     .build();
             DescribeStackResourcesResponse response = cwf.describeStackResources(describeStackResourcesRequest);
             for (StackResource stackResource: response.stackResources()) {
-                Boolean isTagged = false;
-                for (TypesAws typeAws : TypesAws.values()){
-                    if (typeAws.getKey().equals(stackResource.resourceType())){
-                        ResourceReport resourceReport = new ResourceReport(
-                                TypesAws.fromKey(stackResource.resourceType()),
-                                CreatedBy.PIPELINE);
-                        IServiceCatalog iService = ServiceCatalogService.getInstance();
-                        switch (resourceReport.getType()){
-                            case PORTAFOLIO:
-                                ResourceReport resourcePortafolio = iService
-                                        .getPortfolioById(stackResource.physicalResourceId());
-                                resourceReport = resourcePortafolio;
-                                resourcesReport.add(resourceReport);
-                                break;
-                            case PRODUCT:
-                                List<ResourceReport> provisionedSetProduct = iService
-                                        .getProvisionedProductByProductId(stackResource.physicalResourceId());
-                                for (ResourceReport provisionedProduct: provisionedSetProduct) {
-                                    resourcesReport.add(provisionedProduct);
-                                }
-                                break;
-                            default:
-                                resourceReport.setResourceName(stackResource.physicalResourceId());
-                                resourcesReport.add(resourceReport);
-                                break;
-                        }
-
-                        break;
-                    } else {
-                        LOG.warn("Type " + typeAws.getKey() + " doesn't has been implemented or doesn't support tags");
+                if(TypesAws.hasKey(stackResource.resourceType())){
+                    ResourceReport resourceReport = new ResourceReport(
+                            TypesAws.fromKey(stackResource.resourceType()),
+                            CreatedBy.PIPELINE);
+                    IServiceCatalog iService = ServiceCatalogService.getInstance();
+                    switch (resourceReport.getType()){
+                        case PORTAFOLIO:
+                            resourceReport = iService
+                                    .getPortfolioById(stackResource.physicalResourceId());
+                            resourcesReport.add(resourceReport);
+                            break;
+                        case PRODUCT:
+                            List<ResourceReport> provisionedSetProduct = iService
+                                    .getProvisionedProductByProductId(stackResource.physicalResourceId());
+                            resourcesReport.addAll(provisionedSetProduct);
+                            break;
+                        default:
+                            resourceReport.setResourceName(stackResource.physicalResourceId());
+                            resourcesReport.add(resourceReport);
+                            break;
                     }
+                } else {
+                    LOG.warn("Type " + stackResource.resourceType() +
+                            " has not been implemented or not support tagging");
                 }
             }
         }
