@@ -10,10 +10,12 @@ import software.amazon.awssdk.services.servicecatalog.ServiceCatalogClient;
 import software.amazon.awssdk.services.servicecatalog.model.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static org.globant.enums.TypesAws.*;
+import static org.globant.enums.TypesAws.PORTAFOLIO;
+import static org.globant.enums.TypesAws.PRODUCT;
 
 public class ServiceCatalogService implements IService {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCatalogService.class);
@@ -38,6 +40,25 @@ public class ServiceCatalogService implements IService {
                 .forEach(resources::add);
         LOG.debug("Getting PRODUCT resources..");
         client.listRecordHistory().recordDetails().stream()
+                .map(RecordDetail::provisionedProductId)
+                .collect(Collectors.toSet())
+                .stream()
+                .map(DescribeProvisionedProductRequest.builder()::id)
+                .map(DescribeProvisionedProductRequest.Builder::build)
+                .map(req -> {
+                    try {
+                        return client.describeProvisionedProduct(req);
+                    } catch (ResourceNotFoundException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .map(DescribeProvisionedProductResponse::provisionedProductDetail)
+                .map(ProvisionedProductDetail::lastRecordId)
+                .map(DescribeRecordRequest.builder()::id)
+                .map(DescribeRecordRequest.Builder::build)
+                .map(client::describeRecord)
+                .map(DescribeRecordResponse::recordDetail)
                 .map(this::reportProvisionedProduct)
                 .forEach(resources::add);
         return resources;
