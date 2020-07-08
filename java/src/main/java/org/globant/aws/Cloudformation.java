@@ -3,6 +3,8 @@ package org.globant.aws;
 import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
 import org.globant.model.ResourceReport;
+import org.globant.services.IServiceCatalog;
+import org.globant.services.ServiceCatalogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
@@ -28,7 +30,7 @@ public class Cloudformation {
 
     public List<Stack> listStacks(String filterStacks) {
 
-        List<Stack> stackSuccessSet = new ArrayList<Stack>();
+        List<Stack> stackSuccessSet = new ArrayList<>();
 
         try {
             // get stacks
@@ -60,7 +62,7 @@ public class Cloudformation {
     }
 
     public List<ResourceReport> getAllStackResources(List<Stack> stacks){
-        List<ResourceReport> resourcesReport = new ArrayList<ResourceReport>();
+        List<ResourceReport> resourcesReport = new ArrayList<>();
         for (Stack stack: stacks) {
             LOG.info("Getting resources from " + stack.stackName());
             DescribeStackResourcesRequest describeStackResourcesRequest = DescribeStackResourcesRequest
@@ -69,16 +71,30 @@ public class Cloudformation {
                     .build();
             DescribeStackResourcesResponse response = cwf.describeStackResources(describeStackResourcesRequest);
             for (StackResource stackResource: response.stackResources()) {
-                Boolean isTagged = false;
-                for (TypesAws typeAws : TypesAws.values()){
-                    if (typeAws.getKey().equals(stackResource.resourceType())){
-                        ResourceReport resourceReport = new ResourceReport(
-                                TypesAws.fromKey(stackResource.resourceType()),
-                                stackResource.physicalResourceId(),
-                                CreatedBy.PIPELINE);
-                        resourcesReport.add(resourceReport);
-                        break;
+                if(TypesAws.hasKey(stackResource.resourceType())){
+                    ResourceReport resourceReport = new ResourceReport(
+                            TypesAws.fromKey(stackResource.resourceType()),
+                            CreatedBy.PIPELINE);
+                    IServiceCatalog iService = ServiceCatalogService.getInstance();
+                    switch (resourceReport.getType()){
+                        case PORTAFOLIO:
+                            resourceReport = iService
+                                    .getPortfolioById(stackResource.physicalResourceId());
+                            resourcesReport.add(resourceReport);
+                            break;
+                        case PRODUCT:
+                            List<ResourceReport> provisionedSetProduct = iService
+                                    .getProvisionedProductByProductId(stackResource.physicalResourceId());
+                            resourcesReport.addAll(provisionedSetProduct);
+                            break;
+                        default:
+                            resourceReport.setResourceName(stackResource.physicalResourceId());
+                            resourcesReport.add(resourceReport);
+                            break;
                     }
+                } else {
+                    LOG.warn("Type " + stackResource.resourceType() +
+                            " has not been implemented or not support tagging");
                 }
             }
         }

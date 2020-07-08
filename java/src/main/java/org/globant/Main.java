@@ -31,9 +31,10 @@ public class Main {
             System.exit(0);
         }
         LOG.info("Type: " + type.getValue());
-        LOG.info(String.valueOf(type.equals(STACK.getValue())));
-        LOG.info("Filter: " + filter);
-        List<ResourceReport> resources = new ArrayList<ResourceReport>();
+        if (!filter.isEmpty())
+            LOG.info("Filter: " + filter);
+
+        List<ResourceReport> resources = new ArrayList<>();
         TagsBusniess tagsBusniess = new TagsBusniess();
 
         if (type.equals(STACK)) {

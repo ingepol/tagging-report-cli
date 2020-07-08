@@ -16,6 +16,10 @@ public class ResourceReport {
     private List<String> missingTags = Collections.emptyList();
     private CreatedBy created;
 
+    public ResourceReport(TypesAws type, CreatedBy created){
+        this.type = type;
+        this.created = created;
+    };
     public ResourceReport(TypesAws type, String resourceName, CreatedBy created){
         this.type = type;
         this.resourceName = resourceName;
@@ -30,12 +34,12 @@ public class ResourceReport {
         return resourceName;
     }
 
-    public CreatedBy getCreated() {
-        return created;
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 
-    public void setCreated(CreatedBy created) {
-        this.created = created;
+    public CreatedBy getCreated() {
+        return created;
     }
 
     public List<TagReport> getTags() {
