@@ -37,10 +37,9 @@ public class ServiceCatalogService implements IService {
                 .map(this::reportPortfolio)
                 .forEach(resources::add);
         LOG.debug("Getting PRODUCT resources..");
-        client.listProvisionedProductPlans().provisionedProductPlans().stream()
+        client.listRecordHistory().recordDetails().stream()
                 .map(this::reportProvisionedProduct)
                 .forEach(resources::add);
-
         return resources;
     }
 
@@ -66,10 +65,10 @@ public class ServiceCatalogService implements IService {
 
     private List<TagReport> getTagResourceProduct(ResourceReport resource) {
         List<TagReport> report = new ArrayList<>();
-        client.describeProvisionedProductPlan(
-                DescribeProvisionedProductPlanRequest.builder().planId(resource.getArn()).build()
-        ).provisionedProductPlanDetails().tags().stream()
-                .map(tag -> new TagReport(tag.key(), tag.value()))
+        client.describeRecord(
+                DescribeRecordRequest.builder().id(resource.getArn()).build()
+        ).recordDetail().recordTags().stream()
+                .map(recordTag -> new TagReport(recordTag.key(), recordTag.value()))
                 .forEach(report::add);
         return report;
     }
@@ -84,13 +83,13 @@ public class ServiceCatalogService implements IService {
         return report;
     }
 
-    private ResourceReport reportProvisionedProduct(ProvisionedProductPlanSummary product) {
+    private ResourceReport reportProvisionedProduct(RecordDetail product) {
         ResourceReport report = new ResourceReport(
                 PRODUCT,
-                product.provisionProductName(),
+                product.provisionedProductName(),
                 CreatedBy.PIPELINE
         );
-        report.setArn(product.planId());
+        report.setArn(product.recordId());
         return report;
     }
 }
