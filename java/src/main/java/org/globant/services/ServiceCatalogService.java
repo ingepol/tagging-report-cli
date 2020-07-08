@@ -10,10 +10,12 @@ import software.amazon.awssdk.services.servicecatalog.ServiceCatalogClient;
 import software.amazon.awssdk.services.servicecatalog.model.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static org.globant.enums.TypesAws.*;
+import static org.globant.enums.TypesAws.PORTAFOLIO;
+import static org.globant.enums.TypesAws.PRODUCT;
 
 public class ServiceCatalogService implements IService {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCatalogService.class);
@@ -37,10 +39,28 @@ public class ServiceCatalogService implements IService {
                 .map(this::reportPortfolio)
                 .forEach(resources::add);
         LOG.debug("Getting PRODUCT resources..");
-        client.listProvisionedProductPlans().provisionedProductPlans().stream()
+        client.listRecordHistory().recordDetails().stream()
+                .map(RecordDetail::provisionedProductId)
+                .collect(Collectors.toSet())
+                .stream()
+                .map(DescribeProvisionedProductRequest.builder()::id)
+                .map(DescribeProvisionedProductRequest.Builder::build)
+                .map(req -> {
+                    try {
+                        return client.describeProvisionedProduct(req);
+                    } catch (ResourceNotFoundException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .map(DescribeProvisionedProductResponse::provisionedProductDetail)
+                .map(ProvisionedProductDetail::lastRecordId)
+                .map(DescribeRecordRequest.builder()::id)
+                .map(DescribeRecordRequest.Builder::build)
+                .map(client::describeRecord)
+                .map(DescribeRecordResponse::recordDetail)
                 .map(this::reportProvisionedProduct)
                 .forEach(resources::add);
-
         return resources;
     }
 
@@ -66,10 +86,10 @@ public class ServiceCatalogService implements IService {
 
     private List<TagReport> getTagResourceProduct(ResourceReport resource) {
         List<TagReport> report = new ArrayList<>();
-        client.describeProvisionedProductPlan(
-                DescribeProvisionedProductPlanRequest.builder().planId(resource.getArn()).build()
-        ).provisionedProductPlanDetails().tags().stream()
-                .map(tag -> new TagReport(tag.key(), tag.value()))
+        client.describeRecord(
+                DescribeRecordRequest.builder().id(resource.getArn()).build()
+        ).recordDetail().recordTags().stream()
+                .map(recordTag -> new TagReport(recordTag.key(), recordTag.value()))
                 .forEach(report::add);
         return report;
     }
@@ -84,13 +104,13 @@ public class ServiceCatalogService implements IService {
         return report;
     }
 
-    private ResourceReport reportProvisionedProduct(ProvisionedProductPlanSummary product) {
+    private ResourceReport reportProvisionedProduct(RecordDetail product) {
         ResourceReport report = new ResourceReport(
                 PRODUCT,
-                product.provisionProductName(),
+                product.provisionedProductName(),
                 CreatedBy.PIPELINE
         );
-        report.setArn(product.planId());
+        report.setArn(product.recordId());
         return report;
     }
 }
