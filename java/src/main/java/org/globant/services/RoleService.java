@@ -1,7 +1,7 @@
 package org.globant.services;
 
-import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
+import org.globant.model.TagReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
@@ -9,7 +9,6 @@ import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.iam.model.ListRoleTagsRequest;
 import software.amazon.awssdk.services.iam.model.ListRoleTagsResponse;
 import software.amazon.awssdk.services.iam.model.Tag;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class RoleService implements IService{
 
     @Override
     public List<ResourceReport> getAllResource() {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){

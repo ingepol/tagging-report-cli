@@ -1,13 +1,14 @@
 package org.globant.services;
 
-import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
+import org.globant.model.TagReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
-import software.amazon.awssdk.services.ssm.model.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import software.amazon.awssdk.services.ssm.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.ssm.model.ListTagsForResourceResponse;
+import software.amazon.awssdk.services.ssm.model.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class SSMService implements IService {
 
     @Override
     public List<ResourceReport> getAllResource(){
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
