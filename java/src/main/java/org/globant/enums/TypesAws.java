@@ -17,8 +17,8 @@ public enum TypesAws {
     STACK("AWS::CloudFormation::Stack", "Stack"),
     TOPIC("AWS::SNS::Topic", "Topic");
 
-    private static Set<String> KEYS = new HashSet<>();
-    private static Set<String> VALUES = new HashSet<>();
+    private static final Set<String> KEYS = new HashSet<>();
+    private static final Set<String> VALUES = new HashSet<>();
 
     static {
         for(TypesAws typeAws: TypesAws.values()) {
