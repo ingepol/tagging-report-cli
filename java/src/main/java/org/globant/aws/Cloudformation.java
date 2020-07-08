@@ -3,6 +3,8 @@ package org.globant.aws;
 import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
 import org.globant.model.ResourceReport;
+import org.globant.services.IServiceCatalog;
+import org.globant.services.ServiceCatalogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
@@ -12,6 +14,8 @@ import software.amazon.awssdk.services.cloudformation.model.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.globant.enums.TypesAws.*;
 
 public class Cloudformation {
 
@@ -74,10 +78,31 @@ public class Cloudformation {
                     if (typeAws.getKey().equals(stackResource.resourceType())){
                         ResourceReport resourceReport = new ResourceReport(
                                 TypesAws.fromKey(stackResource.resourceType()),
-                                stackResource.physicalResourceId(),
                                 CreatedBy.PIPELINE);
-                        resourcesReport.add(resourceReport);
+                        IServiceCatalog iService = ServiceCatalogService.getInstance();
+                        switch (resourceReport.getType()){
+                            case PORTAFOLIO:
+                                ResourceReport resourcePortafolio = iService
+                                        .getPortfolioById(stackResource.physicalResourceId());
+                                resourceReport = resourcePortafolio;
+                                resourcesReport.add(resourceReport);
+                                break;
+                            case PRODUCT:
+                                List<ResourceReport> provisionedSetProduct = iService
+                                        .getProvisionedProductByProductId(stackResource.physicalResourceId());
+                                for (ResourceReport provisionedProduct: provisionedSetProduct) {
+                                    resourcesReport.add(provisionedProduct);
+                                }
+                                break;
+                            default:
+                                resourceReport.setResourceName(stackResource.physicalResourceId());
+                                resourcesReport.add(resourceReport);
+                                break;
+                        }
+
                         break;
+                    } else {
+                        LOG.warn("Type " + typeAws.getKey() + " doesn't has been implemented or doesn't support tags");
                     }
                 }
             }
