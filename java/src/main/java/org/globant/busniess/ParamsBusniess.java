@@ -5,9 +5,6 @@ import org.globant.model.ParamsCLI;
 import org.globant.services.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.regions.Region;
-
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class ParamsBusniess {
@@ -19,7 +16,7 @@ public class ParamsBusniess {
         boolean resultTypeStack = Stream.of(args).anyMatch(arg -> arg.equals("type=Stack"));
         boolean resultFilter = Stream.of(args).anyMatch(arg -> arg.startsWith("filter=")) && resultTypeStack;
         if(!resultType){
-            LOG.info("type is required when type is stack ");
+            LOG.info("type is required");
         }
         if (resultTypeStack && !resultFilter){
             LOG.info("filter is required when type is Stack ");
@@ -34,7 +31,6 @@ public class ParamsBusniess {
     public ParamsCLI getParamsCLI(String[] args){
 
         ParamsCLI paramsCLI = new ParamsCLI();
-        Region region;
         for (String arg: args){
             if (arg.startsWith("type=")){
                 paramsCLI.setType(TypesAws.fromValue(arg.substring(5)));

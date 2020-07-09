@@ -37,6 +37,11 @@ public class LambdaService implements IService {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public List<ResourceReport> getResourceBy(String filter) {
+        throw new UnsupportedOperationException();
+    }
+
     public List<TagReport> getTagResource(ResourceReport resource){
         LOG.info("Getting tags from a function, Name: " + resource.getResourceName());
         List<TagReport> tagSet = new ArrayList<>();

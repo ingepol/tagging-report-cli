@@ -54,6 +54,11 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
     }
 
     @Override
+    public List<ResourceReport> getResourceBy(String filter) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public List<TagReport> getTagResource(ResourceReport resource) {
         switch (resource.getType()) {
             case PORTAFOLIO:

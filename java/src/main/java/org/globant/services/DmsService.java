@@ -50,6 +50,11 @@ public class DmsService implements IService {
     }
 
     @Override
+    public List<ResourceReport> getResourceBy(String filter) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public List<TagReport> getTagResource(ResourceReport resource) {
         LOG.info("Getting tags from " + resource.getType() + ", Identifier: " + resource.getResourceName());
         List<TagReport> tagSet = new ArrayList<>();

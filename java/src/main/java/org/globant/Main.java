@@ -45,7 +45,11 @@ public class Main {
         } else {
             IService awsService = ServiceFactory.getService(paramsCLI.getType());
             if (awsService != null) {
-                resources = awsService.getAllResource();
+                try {
+                    resources = awsService.getAllResource();
+                } catch (UnsupportedOperationException uoe){
+                    LOG.error("Unsoported operation getAllResource for type %s", paramsCLI.getType().getValue());
+                }
             }
         }
 
@@ -65,6 +69,8 @@ public class Main {
         }
         if (resources.size() > 0) {
             Utils.writeCSV(resources);
+        } else {
+            LOG.warn("The process didn't found resources. Try changing type or filter");
         }
     }
 

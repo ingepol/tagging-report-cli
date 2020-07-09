@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface IService {
     List<ResourceReport> getAllResource();
+    List<ResourceReport> getResourceBy(String filter);
     List<TagReport> getTagResource(ResourceReport resource);
 }

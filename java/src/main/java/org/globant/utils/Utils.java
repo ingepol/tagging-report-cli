@@ -17,7 +17,7 @@ public class Utils {
 
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
-    private static String convertToCSV(String[] data) {
+    private static String convertToStringSeparatedByTab(String[] data) {
         return Stream.of(data)
                 .map(Utils::escapeSpecialCharacters)
                 .collect(Collectors.joining("\t"));
@@ -37,7 +37,7 @@ public class Utils {
 
             File csvOutputFile = File.createTempFile("report", ".csv");
 
-            List<String[]> dataLines = new ArrayList<String[]>();
+            List<String[]> dataLines = new ArrayList<>();
             String[] headers = new String[] {
                     "Type","Resource Name","Tags","Missing Tags","Created by","Classic Coverage","Modern Coverage"};
             dataLines.add(headers);
@@ -64,10 +64,8 @@ public class Utils {
 
             try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
                 dataLines.stream()
-                        .map(Utils::convertToCSV)
+                        .map(Utils::convertToStringSeparatedByTab)
                         .forEach(pw::println);
-            } catch (IOException e) {
-                throw e;
             }
 
             if (csvOutputFile.exists()) {
