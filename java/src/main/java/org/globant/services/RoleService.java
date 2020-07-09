@@ -16,11 +16,11 @@ import java.util.List;
 public class RoleService implements IService{
     private static final Logger LOG = LoggerFactory.getLogger(RoleService.class);
     private static RoleService roleService;
-    IamClient iam;
+    IamClient client;
 
     private RoleService(){
-        Region region = Region.AWS_GLOBAL;
-        iam = IamClient.builder()
+        Region region = RegionService.getInstance().getRegionGlobalAws();
+        client = IamClient.builder()
                 .region(region)
                 .build();
     }
@@ -45,7 +45,7 @@ public class RoleService implements IService{
                 .roleName(resource.getResourceName())
                 .build();
 
-        ListRoleTagsResponse response = iam.listRoleTags(request);
+        ListRoleTagsResponse response = client.listRoleTags(request);
 
         for (Tag tag: response.tags()) {
             tagSet.add(new TagReport(tag.key(), tag.value()));

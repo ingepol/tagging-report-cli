@@ -17,11 +17,11 @@ import java.util.List;
 public class TopicService implements IService {
     private static final Logger LOG = LoggerFactory.getLogger(TopicService.class);
     private static TopicService topicService;
-    SnsClient sns;
+    SnsClient client;
 
     private TopicService(){
-        Region region = Region.US_WEST_2;
-        sns = SnsClient.builder()
+        Region region = RegionService.getInstance().getRegionAws();
+        client = SnsClient.builder()
                 .region(region)
                 .build();
     }
@@ -47,7 +47,7 @@ public class TopicService implements IService {
                 .resourceArn(resource.getResourceName())
                 .build();
 
-        ListTagsForResourceResponse response = sns.listTagsForResource(request);
+        ListTagsForResourceResponse response = client.listTagsForResource(request);
 
         for (Tag tag: response.tags()) {
             tagSet.add(new TagReport(tag.key(), tag.value()));

@@ -17,8 +17,14 @@ import static org.globant.enums.TypesAws.PRODUCT;
 public class ServiceCatalogService implements IService, IServiceCatalog {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCatalogService.class);
     private static ServiceCatalogService SERVICE;
-    private static AccessLevelFilter ACCOUNTFILTER = AccessLevelFilter.builder()
+    private ServiceCatalogClient client;
+    private static final AccessLevelFilter ACCOUNT_FILTER = AccessLevelFilter.builder()
             .key(AccessLevelFilterKey.ACCOUNT).value("self").build();
+
+    private ServiceCatalogService(){
+        Region region = RegionService.getInstance().getRegionAws();
+        client = ServiceCatalogClient.builder().region(region).build();
+    }
 
     public static ServiceCatalogService getInstance() {
         if (SERVICE == null) {
@@ -27,7 +33,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
         return SERVICE;
     }
 
-    private final ServiceCatalogClient client = ServiceCatalogClient.builder().region(Region.US_WEST_2).build();
+
 
     @Override
     public List<ResourceReport> getAllResource() {
@@ -39,7 +45,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
                 .forEach(resources::add);
         LOG.debug("Getting PRODUCT resources..");
         client.searchProvisionedProducts(
-                SearchProvisionedProductsRequest.builder().accessLevelFilter(ACCOUNTFILTER).build()
+                SearchProvisionedProductsRequest.builder().accessLevelFilter(ACCOUNT_FILTER).build()
         ).provisionedProducts().stream()
                 .filter(r -> r.status().equals(ProvisionedProductStatus.AVAILABLE))
                 .map(this::reportProvisionedProduct)
@@ -75,7 +81,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
         filterResource.put(ProvisionedProductViewFilterBy.SEARCH_QUERY, Collections.singletonList(resource.getArn()));
         client.searchProvisionedProducts(
                 SearchProvisionedProductsRequest.builder()
-                        .accessLevelFilter(ACCOUNTFILTER)
+                        .accessLevelFilter(ACCOUNT_FILTER)
                         .filters(filterResource)
                         .build()
         ).provisionedProducts().get(0).tags()
@@ -95,12 +101,25 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
         List<ResourceReport> resources = new ArrayList<>();
         HashMap<ProvisionedProductViewFilterBy, List<String>> filterProduct = new HashMap<>();
         filterProduct.put(ProvisionedProductViewFilterBy.SEARCH_QUERY, Collections.singletonList(id));
-        client.searchProvisionedProducts(
+        SearchProvisionedProductsResponse response = client.searchProvisionedProducts(
                 SearchProvisionedProductsRequest.builder()
-                        .accessLevelFilter(ACCOUNTFILTER)
+                        .accessLevelFilter(ACCOUNT_FILTER)
                         .filters(filterProduct)
                         .build()
-        ).provisionedProducts().stream()
+        );
+        List<ProvisionedProductAttribute> provisionedProducts = new ArrayList<>(response.provisionedProducts());
+        while(response.nextPageToken() != null){
+            response = client.searchProvisionedProducts(
+                    SearchProvisionedProductsRequest.builder()
+                            .accessLevelFilter(ACCOUNT_FILTER)
+                            .filters(filterProduct)
+                            .pageToken(response.nextPageToken())
+                            .build()
+            );
+            provisionedProducts.addAll(response.provisionedProducts());
+        }
+        provisionedProducts
+                .stream()
                 .filter(r -> r.status().equals(ProvisionedProductStatus.AVAILABLE))
                 .map(this::reportProvisionedProduct)
                 .forEach(resources::add);

@@ -1,19 +1,13 @@
 package org.globant.busniess;
 
-import org.apache.commons.collections4.list.SetUniqueList;
 import org.apache.commons.collections4.set.ListOrderedSet;
 import org.globant.enums.ClassicTags;
 import org.globant.enums.ModernTags;
 import org.globant.model.TagReport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class TagsBusniess {
-    private static final Logger LOG = LoggerFactory.getLogger(TagsBusniess.class);
 
     private List<TagReport> getClassicTags(List<TagReport> tags) {
         return tags
@@ -46,7 +40,7 @@ public class TagsBusniess {
                 .map(ModernTags::getValue)
                 .collect(Collectors.toList());
 
-        List<String> missingTags = new ArrayList<String>();
+        List<String> missingTags = new ArrayList<>();
         List<String> keyTags = tags.stream()
                 .map(TagReport::getKey)
                 .collect(Collectors.toList());
