@@ -38,7 +38,8 @@ public class Utils {
             File csvOutputFile = File.createTempFile("report", ".csv");
 
             List<String[]> dataLines = new ArrayList<String[]>();
-            String[] headers = new String[] {"Type","Resource Name","Tags","Missing Tags","Created by"};
+            String[] headers = new String[] {
+                    "Type","Resource Name","Tags","Missing Tags","Created by","Classic Coverage","Modern Coverage"};
             dataLines.add(headers);
 
             Comparator<ResourceReport> compareByTypeThenResorceName = Comparator
@@ -55,7 +56,9 @@ public class Utils {
                             resource.getResourceName(),
                             resource.getStringTags(),
                             resource.getStringMissingTags(),
-                            resource.getCreated().name()
+                            resource.getCreated().name(),
+                            resource.getClassic().toString(),
+                            resource.getModern().toString()
                     });
             }
 

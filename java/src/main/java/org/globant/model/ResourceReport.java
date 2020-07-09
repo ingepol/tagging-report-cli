@@ -15,6 +15,8 @@ public class ResourceReport {
     private List<TagReport> tags = Collections.emptyList();
     private List<String> missingTags = Collections.emptyList();
     private CreatedBy created;
+    private Integer classic;
+    private Integer modern;
 
     public ResourceReport(TypesAws type, CreatedBy created){
         this.type = type;
@@ -81,5 +83,43 @@ public class ResourceReport {
 
     public void setMissingTags(List<String> missingTags) {
         this.missingTags = missingTags;
+    }
+
+    public void setType(TypesAws type) {
+        this.type = type;
+    }
+
+    public void setCreated(CreatedBy created) {
+        this.created = created;
+    }
+
+    public Integer getClassic() {
+        return classic;
+    }
+
+    public void setClassic(Integer classic) {
+        this.classic = classic;
+    }
+
+    public Integer getModern() {
+        return modern;
+    }
+
+    public void setModern(Integer modern) {
+        this.modern = modern;
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceReport{" +
+                "type=" + type +
+                ", resourceName='" + resourceName + '\'' +
+                ", arn='" + arn + '\'' +
+                ", tags=" + tags +
+                ", missingTags=" + missingTags +
+                ", created=" + created +
+                ", classic=" + classic +
+                ", modern=" + modern +
+                '}';
     }
 }
