@@ -8,12 +8,12 @@ import software.amazon.awssdk.services.sts.StsClient;
 public class StsService {
     private static final Logger LOG = LoggerFactory.getLogger(SSMService.class);
     private static StsService SERVICE;
-    private static Region REGION = Region.US_WEST_2;
-    private StsClient sts;
+    private StsClient client;
 
     private StsService(){
-        sts = StsClient.builder().region(REGION).build();;
-        LOG.debug("Created STS Service " + sts.getCallerIdentity());
+        Region region = RegionService.getInstance().getRegionAws();
+        client = StsClient.builder().region(region).build();;
+        LOG.debug("Created STS Service " + client.getCallerIdentity());
     }
 
     public static StsService getInstance() {
@@ -24,6 +24,6 @@ public class StsService {
     }
 
     public String getCurrentAccount(){
-        return sts.getCallerIdentity().account();
+        return client.getCallerIdentity().account();
     }
 }

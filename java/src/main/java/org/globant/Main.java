@@ -1,9 +1,11 @@
 package org.globant;
 
 import org.globant.aws.Cloudformation;
+import org.globant.busniess.ParamsBusniess;
 import org.globant.busniess.TagsBusniess;
 import org.globant.enums.TypesAws;
 import org.globant.factory.ServiceFactory;
+import org.globant.model.ParamsCLI;
 import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
 import org.globant.services.IService;
@@ -24,26 +26,24 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TypesAws type = TypesAws.fromVale(args[0]);
-        String filter = args.length > 1 ? args[1]:"";
-        if (type == null){
-            LOG.error("The type doesn't exist or it's not implemented, yet");
-            System.exit(0);
-        }
-        LOG.info("Type: " + type.getValue());
-        if (!filter.isEmpty())
-            LOG.info("Filter: " + filter);
+
 
         List<ResourceReport> resources = new ArrayList<>();
         TagsBusniess tagsBusniess = new TagsBusniess();
+        ParamsBusniess paramsBusniess = new ParamsBusniess();
+        if (!paramsBusniess.validateRequiredArgs(args)){
+            LOG.error("Arguments are invalidates");
+            System.exit(0);
+        }
+        ParamsCLI paramsCLI = paramsBusniess.getParamsCLI(args);
 
-        if (type.equals(STACK)) {
+        if (paramsCLI.getType().equals(STACK)) {
             LOG.info("Getting stacks...");
             Cloudformation cloudformation = new Cloudformation();
-            List<Stack> stackSet = cloudformation.listStacks(filter);
+            List<Stack> stackSet = cloudformation.listStacks(paramsCLI.getFilter());
             resources = cloudformation.getAllStackResources(stackSet);
         } else {
-            IService awsService = ServiceFactory.getService(type);
+            IService awsService = ServiceFactory.getService(paramsCLI.getType());
             if (awsService != null) {
                 resources = awsService.getAllResource();
             }
@@ -67,4 +67,5 @@ public class Main {
             Utils.writeCSV(resources);
         }
     }
+
 }

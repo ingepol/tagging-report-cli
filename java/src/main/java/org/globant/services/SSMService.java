@@ -16,11 +16,11 @@ import java.util.List;
 public class SSMService implements IService {
     private static final Logger LOG = LoggerFactory.getLogger(SSMService.class);
     private static SSMService ssmService;
-    SsmClient ssm;
+    SsmClient client;
 
     private SSMService(){
-        Region region = Region.US_WEST_2;
-        ssm = SsmClient.builder()
+        Region region = RegionService.getInstance().getRegionAws();
+        client = SsmClient.builder()
                 .region(region)
                 .build();
     }
@@ -47,7 +47,7 @@ public class SSMService implements IService {
                 .resourceType(resource.getType().getValue())
                 .build();
 
-        ListTagsForResourceResponse response = ssm.listTagsForResource(request);
+        ListTagsForResourceResponse response = client.listTagsForResource(request);
 
         for (Tag tag: response.tagList()) {
             tagSet.add(new TagReport(tag.key(), tag.value()));

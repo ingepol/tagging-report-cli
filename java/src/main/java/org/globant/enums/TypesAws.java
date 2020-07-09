@@ -14,7 +14,9 @@ public enum TypesAws {
     PORTAFOLIO("AWS::ServiceCatalog::Portfolio","Portfolio"),
     PRODUCT("AWS::ServiceCatalog::CloudFormationProduct","Product"),
     ROLE("AWS::IAM::Role","Role"),
+    RULE("AWS::Events::Rule","Rule"),
     STACK("AWS::CloudFormation::Stack", "Stack"),
+    S3("AWS::S3::Bucket", "S3"),
     TOPIC("AWS::SNS::Topic", "Topic");
 
     private static final Set<String> KEYS = new HashSet<>();
@@ -46,7 +48,7 @@ public enum TypesAws {
         return null;
     }
 
-    public static TypesAws fromVale(String key) {
+    public static TypesAws fromValue(String key) {
         for (TypesAws type : TypesAws.values()) {
             if (type.getValue().equalsIgnoreCase(key)) {
                 return type;

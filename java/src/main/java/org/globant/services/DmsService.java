@@ -26,7 +26,7 @@ public class DmsService implements IService {
         dms = AWSDatabaseMigrationServiceClientBuilder
                 .standard()
                 .build();
-        resourceReportSet = new ArrayList<ResourceReport>();
+        resourceReportSet = new ArrayList<>();
     }
 
     public  static DmsService getInstance() {
@@ -52,7 +52,7 @@ public class DmsService implements IService {
     @Override
     public List<TagReport> getTagResource(ResourceReport resource) {
         LOG.info("Getting tags from " + resource.getType() + ", Identifier: " + resource.getResourceName());
-        List<TagReport> tagSet = new ArrayList<TagReport>();
+        List<TagReport> tagSet = new ArrayList<>();
         String arn = getOrBuildArnResource(resource);
         ListTagsForResourceRequest request = new ListTagsForResourceRequest().withResourceArn(arn);
         ListTagsForResourceResult result = dms.listTagsForResource(request);
@@ -64,13 +64,15 @@ public class DmsService implements IService {
 
     private String getOrBuildArnResource(ResourceReport resource){
         TypesAws type = resource.getType();
-        StringBuilder arn = new StringBuilder("arn:aws:dms:us-west-2:");
-        arn.append(StsService.getInstance().getCurrentAccount());
+        StringBuilder arn = new StringBuilder("arn:aws:dms:");
+        arn.append(RegionService.getInstance().getRegionAws().toString())
+                .append(":")
+                .append(StsService.getInstance().getCurrentAccount());
         if (type.equals(DMS_ENDPOINT) || type.equals(DMS_INSTANCE) ||
                 type.equals(DMS_TASK)){
             return resource.getArn();
         }
-        else if (type.equals(DMS_SUBNET_GROUP.getKey()))
+        else if (type.equals(DMS_SUBNET_GROUP))
             arn.append(":subgrp:");
         else
             arn.append(":es:");

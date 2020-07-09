@@ -16,11 +16,11 @@ import java.util.Map;
 public class LambdaService implements IService {
     private static final Logger LOG = LoggerFactory.getLogger(SSMService.class);
     private static LambdaService lambdaService;
-    LambdaClient lambda;
+    LambdaClient client;
 
     private LambdaService(){
-        Region region = Region.US_WEST_2;
-        lambda = LambdaClient.builder()
+        Region region = RegionService.getInstance().getRegionAws();
+        client = LambdaClient.builder()
                 .region(region)
                 .build();
     }
@@ -39,14 +39,14 @@ public class LambdaService implements IService {
 
     public List<TagReport> getTagResource(ResourceReport resource){
         LOG.info("Getting tags from a function, Name: " + resource.getResourceName());
-        List<TagReport> tagSet = new ArrayList<TagReport>();
+        List<TagReport> tagSet = new ArrayList<>();
 
         GetFunctionRequest request = GetFunctionRequest
                 .builder()
                 .functionName(resource.getResourceName())
                 .build();
 
-        GetFunctionResponse response = lambda.getFunction(request);
+        GetFunctionResponse response = client.getFunction(request);
 
         for (Map.Entry<String,String> tag: response.tags().entrySet()) {
             tagSet.add(new TagReport(tag.getKey(), tag.getValue()));

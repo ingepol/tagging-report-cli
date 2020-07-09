@@ -16,20 +16,24 @@ public class ServiceFactory {
             return null;
         }
         IService awsService = null;
-        if (serviceType.equals(PARAMETER)) {
+        if (serviceType.getKey().contains("DMS")) {
+            awsService = DmsService.getInstance();
+        } else if (serviceType.equals(LAMBDA)) {
+            awsService = LambdaService.getInstance();
+        } else if (serviceType.equals(PARAMETER)) {
             awsService = SSMService.getInstance();
         } else if (serviceType.equals(ROLE)) {
             awsService = RoleService.getInstance();
-        } else if (serviceType.equals(LAMBDA)) {
-            awsService = LambdaService.getInstance();
-        } else if (serviceType.equals(TOPIC)) {
-            awsService = TopicService.getInstance();
-        } else if (serviceType.getKey().contains("DMS")) {
-            awsService = DmsService.getInstance();
+        } else if (serviceType.equals(RULE)) {
+            awsService = EventRuleService.getInstance();
         } else if  (serviceType.getKey().contains("ServiceCatalog")) {
             awsService = ServiceCatalogService.getInstance();
+        } else if (serviceType.equals(S3)) {
+            awsService = S3Service.getInstance();
+        } else if (serviceType.equals(TOPIC)) {
+            awsService = TopicService.getInstance();
         } else {
-            LOG.warn("The type: " + serviceType + " don't support tagging") ;
+            LOG.warn("The type: " + serviceType.getKey() + " don't support tagging") ;
         }
         return awsService;
     }
