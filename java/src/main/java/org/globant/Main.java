@@ -55,9 +55,12 @@ public class Main {
                 List<TagReport> tags = awsService.getTagResource(resource);
 
                 List<TagReport> requiredTags = tagsBusniess.getAllTags(tags);
-                List<String> missingTags = tagsBusniess.getMissingRequiredTags(tags);
+                List<String> missingTags = tagsBusniess.getMissingModernTags(tags);
                 resource.setTags(requiredTags);
                 resource.setMissingTags(missingTags);
+
+                resource.setClassic(tagsBusniess.getClassicCoverage(tags));
+                resource.setModern(tagsBusniess.getModernCoverage(tags));
             }
         }
         if (resources.size() > 0) {

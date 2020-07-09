@@ -1,6 +1,7 @@
 package org.globant.enums;
 
 public enum ModernTags {
+    NAME("Name"),
     BU_MOD("rlg:business-unit"),
     PRODUCT( "rlg:product"),
     APPLICATION( "rlg:application"),
