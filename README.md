@@ -5,10 +5,10 @@ Make
 `$ make all`
 
 Run cli **run.sh**
-`./run.sh Main 'type=Stack filter=stg-ecp-ingestion-cli'`
+`./run.sh '-t Stack -f stg-ecp-ingestion-cli'`
 
 Make and run
-`$ make all && ./run.sh Main 'type=Stack filter=stg-ecp-ingestion-cli'`
+`$ make all && ./run.sh '-t Stack -t stg-ecp-ingestion-cli'`
 
 When the type is Stack, the filter parameter should be sending.
 

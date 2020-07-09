@@ -1,9 +1,8 @@
 package org.globant;
 
-import org.globant.aws.Cloudformation;
-import org.globant.busniess.ParamsBusniess;
+import org.globant.aws.CloudFormation;
+import org.globant.cli.CommandsCLI;
 import org.globant.busniess.TagsBusniess;
-import org.globant.enums.TypesAws;
 import org.globant.factory.ServiceFactory;
 import org.globant.model.ParamsCLI;
 import org.globant.model.TagReport;
@@ -20,26 +19,20 @@ import java.util.List;
 import static org.globant.enums.TypesAws.*;
 
 
-public class Main {
+public class Application {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
 
-
-
         List<ResourceReport> resources = new ArrayList<>();
         TagsBusniess tagsBusniess = new TagsBusniess();
-        ParamsBusniess paramsBusniess = new ParamsBusniess();
-        if (!paramsBusniess.validateRequiredArgs(args)){
-            LOG.error("Arguments are invalidates");
-            System.exit(0);
-        }
-        ParamsCLI paramsCLI = paramsBusniess.getParamsCLI(args);
+        CommandsCLI commandsCLI = new CommandsCLI();
+        ParamsCLI paramsCLI = commandsCLI.getParamsCLI(args);
 
         if (paramsCLI.getType().equals(STACK)) {
             LOG.info("Getting stacks...");
-            Cloudformation cloudformation = new Cloudformation();
+            CloudFormation cloudformation = new CloudFormation();
             List<Stack> stackSet = cloudformation.listStacks(paramsCLI.getFilter());
             resources = cloudformation.getAllStackResources(stackSet);
         } else {
@@ -48,7 +41,8 @@ public class Main {
                 try {
                     resources = awsService.getAllResource();
                 } catch (UnsupportedOperationException uoe){
-                    LOG.error("Unsoported operation getAllResource for type %s", paramsCLI.getType().getValue());
+                    LOG.error("Unsoported operation getAllResource for type " +
+                            paramsCLI.getType().getValue());
                 }
             }
         }

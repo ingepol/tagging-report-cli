@@ -13,7 +13,6 @@ public class RegionService {
 
     private RegionService(String region){
         REGION_AWS = getRerionAwnByValue(region);
-        LOG.info("Region set " + REGION_AWS.toString());
     }
 
     public static void createInstance(String region){

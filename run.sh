@@ -1,12 +1,8 @@
 #!/bin/bash
 if [[ -z $* ]] ; then
-    echo 'Supply the name of one of the example classes as an argument.'
-    echo 'If there are arguments to the class, put them in quotes after the class name.'
+    echo 'Put args in quotes after ./run.sh.'
     exit 1
 fi
 export CLASSPATH=target/aws_tagging-1.0.jar
-export className=$1
-echo "## Running $className..."
-shift
 echo "## arguments $@..."
-mvn exec:java -Dexec.mainClass="org.globant.$className" -Dexec.args="$@" -Dexec.cleanupDaemonThreads=false
+mvn exec:java -Dexec.mainClass="org.globant.Application" -Dexec.args="$@" -Dexec.cleanupDaemonThreads=false

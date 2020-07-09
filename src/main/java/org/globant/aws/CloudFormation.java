@@ -15,13 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Cloudformation {
+public class CloudFormation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Cloudformation.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CloudFormation.class);
 
     CloudFormationClient cwf;
 
-    public Cloudformation(){
+    public CloudFormation(){
         Region region = Region.US_WEST_2;
         cwf = CloudFormationClient.builder()
                 .region(region)
