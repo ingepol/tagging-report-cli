@@ -57,8 +57,8 @@ public class Utils {
                             resource.getStringTags(),
                             resource.getStringMissingTags(),
                             resource.getCreated().name(),
-                            resource.getClassic().toString(),
-                            resource.getModern().toString()
+                            resource.getClassic().toString()+"%",
+                            resource.getModern().toString()+"%"
                     });
             }
 
