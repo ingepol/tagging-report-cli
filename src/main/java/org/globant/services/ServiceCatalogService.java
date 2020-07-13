@@ -114,6 +114,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
         );
         List<ProvisionedProductAttribute> provisionedProducts = new ArrayList<>(response.provisionedProducts());
         while(response.nextPageToken() != null){
+            LOG.info("Fetched provisioned producs: " + provisionedProducts.size());
             response = client.searchProvisionedProducts(
                     SearchProvisionedProductsRequest.builder()
                             .accessLevelFilter(ACCOUNT_FILTER)
@@ -123,6 +124,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
             );
             provisionedProducts.addAll(response.provisionedProducts());
         }
+        LOG.info("Fetched provisioned producs: " + provisionedProducts.size());
         provisionedProducts
                 .stream()
                 .filter(r -> r.status().equals(ProvisionedProductStatus.AVAILABLE))

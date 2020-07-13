@@ -1,3 +1,10 @@
+** Idea **
 .idea
 *.iml
-target/
+
+** Gradle **
+.gradle/
+gradle
+
+** Build **
+build/
