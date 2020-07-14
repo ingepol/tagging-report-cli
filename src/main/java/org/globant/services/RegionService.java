@@ -18,7 +18,7 @@ public class RegionService {
     public static void createInstance(Region region){
         if (SERVICE == null) {
             SERVICE = new RegionService(region);
-            LOG.info("Region selected: " + SERVICE.toString());
+            LOG.info("Region selected: " + REGION_AWS.toString());
         }
     }
 

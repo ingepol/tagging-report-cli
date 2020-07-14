@@ -32,7 +32,11 @@ Run the clean and jar gradle task
 # Running
 
 Run cli **run.sh**
-`java -jar build/libs/aws_tagging-1.0.jar -t Stack -s ecp-ingestion-validation`
+`java -jar build/libs/aws_tagging-1.0.jar -t Stack -s ingestion`
+
+or
+
+`java -jar build/libs/aws_tagging-1.0.jar -t=Stack -s=ingestion`
 
 # Report taggin
 

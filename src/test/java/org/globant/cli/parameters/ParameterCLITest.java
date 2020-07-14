@@ -6,11 +6,6 @@ import org.junit.*;
 import org.junit.rules.ExpectedException;
 import software.amazon.awssdk.regions.Region;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.globant.enums.TypesAws.STACK;
-
 public class ParameterCLITest {
 
     ParametersCLI parametersCLI;

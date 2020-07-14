@@ -1,6 +1,7 @@
 package org.globant.cli.parameters;
 
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import org.globant.cli.convert.RegionConvert;
 import org.globant.cli.convert.TypeConvert;
 import org.globant.cli.validate.ValidateRegion;
@@ -8,6 +9,7 @@ import org.globant.cli.validate.ValidateType;
 import org.globant.enums.TypesAws;
 import software.amazon.awssdk.regions.Region;
 
+@Parameters(separators = "=")
 public class ParametersCLI {
     @Parameter(names={"--type", "-t"},
             description = "Type of resource that you need evaluate",
