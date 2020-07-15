@@ -43,12 +43,12 @@ public class SSMService implements IService {
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
-        LOG.info("Getting tags from a parameter, Name:  " + resource.getResourceName());
+        LOG.info("Getting tags from a parameter, Name:  " + resource.getName());
         List<TagReport> tagSet = new ArrayList<TagReport>();
 
         ListTagsForResourceRequest request = ListTagsForResourceRequest
                 .builder()
-                .resourceId(resource.getResourceName())
+                .resourceId(resource.getName())
                 .resourceType(resource.getType().getValue())
                 .build();
 

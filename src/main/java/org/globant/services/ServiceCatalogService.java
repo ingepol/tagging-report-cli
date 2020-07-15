@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.servicecatalog.model.*;
 
 import java.util.*;
 
-import static org.globant.enums.TypesAws.PORTAFOLIO;
+import static org.globant.enums.TypesAws.PORTFOLIO;
 import static org.globant.enums.TypesAws.PRODUCT;
 
 public class ServiceCatalogService implements IService, IServiceCatalog {
@@ -32,8 +32,6 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
         }
         return SERVICE;
     }
-
-
 
     @Override
     public List<ResourceReport> getAllResource() {
@@ -61,7 +59,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
     @Override
     public List<TagReport> getTagResource(ResourceReport resource) {
         switch (resource.getType()) {
-            case PORTAFOLIO:
+            case PORTFOLIO:
                 return getTagResourcePortfolio(resource);
             case PRODUCT:
                 return getTagResourceProduct(resource);
@@ -71,19 +69,19 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
     }
 
     private List<TagReport> getTagResourcePortfolio(ResourceReport resource) {
-        LOG.info("Getting tags from a portfolio, Name:  " + resource.getResourceName());
+        LOG.info("Getting tags from a portfolio, Name:  " + resource.getName());
         List<TagReport> report = new ArrayList<>();
-        client.describePortfolio(DescribePortfolioRequest.builder().id(resource.getArn()).build()).tags().stream()
+        client.describePortfolio(DescribePortfolioRequest.builder().id(resource.getId()).build()).tags().stream()
                 .map(tag -> new TagReport(tag.key(), tag.value()))
                 .forEach(report::add);
         return report;
     }
 
     private List<TagReport> getTagResourceProduct(ResourceReport resource) {
-        LOG.info("Getting tags from a product, Name:  " + resource.getResourceName());
+        LOG.info("Getting tags from a product, Name:  " + resource.getName());
         List<TagReport> report = new ArrayList<>();
         HashMap<ProvisionedProductViewFilterBy, List<String>> filterResource = new HashMap<>();
-        filterResource.put(ProvisionedProductViewFilterBy.SEARCH_QUERY, Collections.singletonList(resource.getArn()));
+        filterResource.put(ProvisionedProductViewFilterBy.SEARCH_QUERY, Collections.singletonList(resource.getId()));
         client.searchProvisionedProducts(
                 SearchProvisionedProductsRequest.builder()
                         .accessLevelFilter(ACCOUNT_FILTER)
@@ -96,12 +94,14 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
         return report;
     }
 
+    @Override
     public  ResourceReport getPortfolioById(String id){
         PortfolioDetail detail = client.describePortfolio(DescribePortfolioRequest
                 .builder().id(id).build()).portfolioDetail();
         return reportPortfolio(detail);
     }
 
+    @Override
     public List<ResourceReport> getProvisionedProductByProductId(String id){
         List<ResourceReport> resources = new ArrayList<>();
         HashMap<ProvisionedProductViewFilterBy, List<String>> filterProduct = new HashMap<>();
@@ -132,23 +132,19 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
     }
 
     private ResourceReport reportPortfolio(PortfolioDetail portfolio) {
-        ResourceReport report = new ResourceReport(
-                PORTAFOLIO,
-                portfolio.displayName(),
-                CreatedBy.CUSTOM
-        );
-        report.setArn(portfolio.id());
-        return report;
+        return ResourceReport.builder(portfolio.id())
+                .withName(portfolio.displayName())
+                .withCreate(CreatedBy.CUSTOM)
+                .withType(PORTFOLIO)
+                .build();
     }
 
     private ResourceReport reportProvisionedProduct(ProvisionedProductAttribute product) {
-        ResourceReport report = new ResourceReport(
-                PRODUCT,
-                product.name(),
-                CreatedBy.CUSTOM
-        );
-        report.setArn(product.provisioningArtifactId());
-        return report;
+        return ResourceReport.builder(product.provisioningArtifactId())
+                .withName(product.name())
+                .withCreate(CreatedBy.CUSTOM)
+                .withType(PRODUCT)
+                .build();
     }
 
 

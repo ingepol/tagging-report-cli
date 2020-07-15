@@ -43,11 +43,11 @@ public class S3Service implements  IService{
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
-        LOG.info("Getting tags from a s3, Name:  " + resource.getResourceName());
+        LOG.info("Getting tags from a s3, Name:  " + resource.getName());
         List<TagReport> tagSet = new ArrayList<>();
         GetBucketTaggingRequest request = GetBucketTaggingRequest
                 .builder()
-                .bucket(resource.getResourceName())
+                .bucket(resource.getName())
                 .build();
 
         GetBucketTaggingResponse response = client.getBucketTagging(request);

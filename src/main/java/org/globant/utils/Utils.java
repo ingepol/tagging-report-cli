@@ -44,7 +44,7 @@ public class Utils {
 
             Comparator<ResourceReport> compareByTypeThenResorceName = Comparator
                     .comparing(ResourceReport::getType)
-                    .thenComparing(ResourceReport::getResourceName);
+                    .thenComparing(ResourceReport::getName);
 
             List<ResourceReport> sortedResources = resources.stream()
                     .sorted(compareByTypeThenResorceName)
@@ -53,10 +53,10 @@ public class Utils {
             for (ResourceReport resource: sortedResources) {
                     dataLines.add(new String[] {
                             resource.getType().getValue(),
-                            resource.getResourceName(),
+                            resource.getName(),
                             resource.getStringTags(),
                             resource.getStringMissingTags(),
-                            resource.getCreated().name(),
+                            resource.getCreate().name(),
                             resource.getClassic().toString()+"%",
                             resource.getModern().toString()+"%"
                     });

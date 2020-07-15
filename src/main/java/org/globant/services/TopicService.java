@@ -44,12 +44,12 @@ public class TopicService implements IService {
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
-        LOG.info("Getting tags from a topic, Name: " + resource.getResourceName());
+        LOG.info("Getting tags from a topic, Name: " + resource.getName());
         List<TagReport> tagSet = new ArrayList<TagReport>();
 
         ListTagsForResourceRequest request = ListTagsForResourceRequest
                 .builder()
-                .resourceArn(resource.getResourceName())
+                .resourceArn(resource.getName())
                 .build();
 
         ListTagsForResourceResponse response = client.listTagsForResource(request);

@@ -28,6 +28,8 @@ public class ServiceFactory {
             awsService = EventRuleService.getInstance();
         } else if  (serviceType.getKey().contains("ServiceCatalog")) {
             awsService = ServiceCatalogService.getInstance();
+        } else if  (serviceType.getKey().contains("::Glue::")) {
+            awsService = GlueService.getInstance();
         } else if (serviceType.equals(S3)) {
             awsService = S3Service.getInstance();
         } else if (serviceType.equals(TOPIC)) {

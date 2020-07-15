@@ -11,13 +11,22 @@ public enum TypesAws {
     DMS_INSTANCE("AWS::DMS::ReplicationInstance", "Instance"),
     LAMBDA("AWS::Lambda::Function", "Function"),
     PARAMETER("AWS::SSM::Parameter", "Parameter"),
-    PORTAFOLIO("AWS::ServiceCatalog::Portfolio","Portfolio"),
-    PRODUCT("AWS::ServiceCatalog::CloudFormationProduct","Product"),
     ROLE("AWS::IAM::Role","Role"),
     RULE("AWS::Events::Rule","Rule"),
     STACK("AWS::CloudFormation::Stack", "Stack"),
     S3("AWS::S3::Bucket", "S3"),
-    TOPIC("AWS::SNS::Topic", "Topic");
+    TOPIC("AWS::SNS::Topic", "Topic"),
+
+    //Service Catalog
+    PORTFOLIO("AWS::ServiceCatalog::Portfolio","Portfolio"),
+    PRODUCT("AWS::ServiceCatalog::CloudFormationProduct","Product"),
+
+    //Glue Service
+    CRAWLER ("AWS::Glue::Crawler", "Crawler"),
+    DATABASE("AWS::Glue::Database","Database"),
+    JOB     ("AWS::Glue::Job",     "Job"),
+    TRIGGER ("AWS::Glue::Trigger", "Trigger"),
+    ;
 
     private static final Set<String> KEYS = new HashSet<>();
     private static final Set<String> VALUES = new HashSet<>();

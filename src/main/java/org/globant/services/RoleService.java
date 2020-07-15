@@ -43,11 +43,11 @@ public class RoleService implements IService{
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
-        LOG.info("Getting tags from a role, Name:  " + resource.getResourceName());
+        LOG.info("Getting tags from a role, Name:  " + resource.getName());
         List<TagReport> tagSet = new ArrayList<TagReport>();
         ListRoleTagsRequest request = ListRoleTagsRequest
                 .builder()
-                .roleName(resource.getResourceName())
+                .roleName(resource.getName())
                 .build();
 
         ListRoleTagsResponse response = client.listRoleTags(request);

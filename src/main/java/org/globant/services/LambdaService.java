@@ -43,12 +43,12 @@ public class LambdaService implements IService {
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
-        LOG.info("Getting tags from a function, Name: " + resource.getResourceName());
+        LOG.info("Getting tags from a function, Name: " + resource.getName());
         List<TagReport> tagSet = new ArrayList<>();
 
         GetFunctionRequest request = GetFunctionRequest
                 .builder()
-                .functionName(resource.getResourceName())
+                .functionName(resource.getName())
                 .build();
 
         GetFunctionResponse response = client.getFunction(request);

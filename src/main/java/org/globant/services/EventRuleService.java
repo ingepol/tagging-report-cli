@@ -43,7 +43,7 @@ public class EventRuleService implements IService {
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
-        LOG.info("Getting tags from a s3, Name:  " + resource.getResourceName());
+        LOG.info("Getting tags from a s3, Name:  " + resource.getName());
         List<TagReport> tagSet = new ArrayList<>();
         ListTagsForResourceRequest request = ListTagsForResourceRequest
                 .builder()
@@ -64,7 +64,7 @@ public class EventRuleService implements IService {
                 .append(":")
                 .append(StsService.getInstance().getCurrentAccount())
                 .append(":rule/")
-                .append(resource.getResourceName());
+                .append(resource.getName());
         return arn.toString();
     }
 

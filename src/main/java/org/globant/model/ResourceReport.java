@@ -1,5 +1,6 @@
 package org.globant.model;
 
+import org.apache.commons.lang3.StringUtils;
 import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
 
@@ -8,45 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ResourceReport {
-
-    private TypesAws type;
-    private String resourceName;
-    private String arn;
-    private List<TagReport> tags = Collections.emptyList();
-    private List<String> missingTags = Collections.emptyList();
-    private CreatedBy created;
+    private final String id;
+    private final TypesAws type;
+    private final CreatedBy create;
+    private String name;
     private Integer classic;
     private Integer modern;
-
-    public ResourceReport(TypesAws type, CreatedBy created){
-        this.type = type;
-        this.created = created;
-    };
-    public ResourceReport(TypesAws type, String resourceName, CreatedBy created){
-        this.type = type;
-        this.resourceName = resourceName;
-        this.created = created;
-    }
-
-    public TypesAws getType() {
-        return type;
-    }
-
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
-    public CreatedBy getCreated() {
-        return created;
-    }
-
-    public List<TagReport> getTags() {
-        return tags;
-    }
+    private List<TagReport> tags = Collections.emptyList();
+    private List<String> missingTags = Collections.emptyList();
 
     public String getStringTags() {
         if (tags == null) {
@@ -57,69 +27,85 @@ public class ResourceReport {
                 .collect(Collectors.joining(","));
     }
 
-    public String getArn() {
-        return arn;
-    }
-
-    public void setArn(String arn) {
-        this.arn = arn;
-    }
-
-    public void setTags(List<TagReport> tags) {
-        this.tags = tags;
-    }
-
-    public List<String> getMissingTags() {
-        return missingTags;
-    }
-
     public String getStringMissingTags() {
-        if (missingTags == null) {
+        if (null == missingTags) {
             return "";
         }
-        return missingTags.stream()
-                .collect(Collectors.joining(","));
+        return String.join(",", missingTags);
     }
 
-    public void setMissingTags(List<String> missingTags) {
-        this.missingTags = missingTags;
+    public String getId() {
+        return id;
     }
 
-    public void setType(TypesAws type) {
-        this.type = type;
+    public String getName() {
+        return name;
     }
 
-    public void setCreated(CreatedBy created) {
-        this.created = created;
+    public TypesAws getType() {
+        return type;
+    }
+
+    public CreatedBy getCreate() {
+        return create;
     }
 
     public Integer getClassic() {
         return classic;
     }
 
-    public void setClassic(Integer classic) {
-        this.classic = classic;
-    }
-
     public Integer getModern() {
         return modern;
     }
 
-    public void setModern(Integer modern) {
-        this.modern = modern;
+    private ResourceReport(ResourceReport.Builder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.type = builder.type;
+        this.create = builder.create;
     }
 
-    @Override
-    public String toString() {
-        return "ResourceReport{" +
-                "type=" + type +
-                ", resourceName='" + resourceName + '\'' +
-                ", arn='" + arn + '\'' +
-                ", tags=" + tags +
-                ", missingTags=" + missingTags +
-                ", created=" + created +
-                ", classic=" + classic +
-                ", modern=" + modern +
-                '}';
+    public static ResourceReport.Builder builder(String id) {
+        return new ResourceReport.Builder(id);
+    }
+
+    public static class Builder {
+        private final String id;
+        private String name;
+        private TypesAws type;
+        private CreatedBy create;
+
+        public Builder(String id) {
+            this.id = id;
+            this.name = id;
+        }
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+
+        public Builder withType(TypesAws type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder withCreate(CreatedBy created) {
+            this.create = created;
+            return this;
+        }
+
+        public Builder withResource(ResourceReport resource) {
+            this.name = resource.name;
+            this.type = resource.type;
+            this.create = resource.create;
+            return this;
+        }
+
+        public ResourceReport build() {
+            return new ResourceReport(this);
+        }
+
     }
 }
