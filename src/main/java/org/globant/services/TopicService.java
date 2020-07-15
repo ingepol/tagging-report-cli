@@ -45,7 +45,7 @@ public class TopicService implements IService {
 
     public List<TagReport> getTagResource(ResourceReport resource){
         LOG.info("Getting tags from a topic, Name: " + resource.getName());
-        List<TagReport> tagSet = new ArrayList<TagReport>();
+        List<TagReport> tagSet = new ArrayList<>();
 
         ListTagsForResourceRequest request = ListTagsForResourceRequest
                 .builder()
