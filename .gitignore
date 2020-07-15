@@ -4,7 +4,9 @@
 
 ** Gradle **
 .gradle/
-gradle
 
 ** Build **
 build/
+
+** Deprecate mvn project
+target/

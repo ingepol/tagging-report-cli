@@ -31,11 +31,14 @@ Run the clean and jar gradle task
 
 # Running
 
-Run cli **run.sh**
-`java -jar build/libs/aws_tagging-1.0.jar -t Stack -s ingestion`
+Run cli **run.sh** 
+ 
+`./run.sh '-t Stack -s ingestion'`  
+`./run.sh '-t=Stack -s=ingestion'`
 
 or
 
+`java -jar build/libs/aws_tagging-1.0.jar -t Stack -s ingestion`  
 `java -jar build/libs/aws_tagging-1.0.jar -t=Stack -s=ingestion`
 
 # Report taggin

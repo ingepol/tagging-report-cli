@@ -1,12 +1,17 @@
 plugins{
     id 'java'
     id 'maven'
+    id 'application'
     id "org.sonarqube" version "3.0"
     id 'com.palantir.graal' version '0.6.0'
 }
 
 group = 'org.globant'
 version = '1.0'
+
+application {
+    mainClassName = 'org.globant.cli.AppCLI'
+}
 
 jar {
     manifest {
