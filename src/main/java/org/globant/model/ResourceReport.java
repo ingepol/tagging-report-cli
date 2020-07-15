@@ -18,6 +18,13 @@ public class ResourceReport {
     private List<TagReport> tags = Collections.emptyList();
     private List<String> missingTags = Collections.emptyList();
 
+    private ResourceReport(ResourceReport.Builder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.type = builder.type;
+        this.create = builder.create;
+    }
+
     public String getStringTags() {
         if (tags == null) {
             return "";
@@ -58,11 +65,20 @@ public class ResourceReport {
         return modern;
     }
 
-    private ResourceReport(ResourceReport.Builder builder) {
-        this.id = builder.id;
-        this.name = builder.name;
-        this.type = builder.type;
-        this.create = builder.create;
+    public void setClassic(Integer classic) {
+        this.classic = classic;
+    }
+
+    public void setModern(Integer modern) {
+        this.modern = modern;
+    }
+
+    public void setTags(List<TagReport> tags) {
+        this.tags = tags;
+    }
+
+    public void setMissingTags(List<String> missingTags) {
+        this.missingTags = missingTags;
     }
 
     public static ResourceReport.Builder builder(String id) {
@@ -106,6 +122,5 @@ public class ResourceReport {
         public ResourceReport build() {
             return new ResourceReport(this);
         }
-
     }
 }

@@ -1,15 +1,9 @@
 package org.globant.cli;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import org.globant.aws.CloudFormation;
 import org.globant.busniess.TagsBusniess;
-import org.globant.cli.convert.RegionConvert;
-import org.globant.cli.convert.TypeConvert;
 import org.globant.cli.parameters.ParametersCLI;
-import org.globant.cli.validate.ValidateRegion;
-import org.globant.cli.validate.ValidateType;
-import org.globant.enums.TypesAws;
 import org.globant.factory.ServiceFactory;
 import org.globant.model.ResourceReport;
 import org.globant.model.TagReport;
@@ -18,7 +12,6 @@ import org.globant.services.RegionService;
 import org.globant.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudformation.model.Stack;
 
 import java.util.ArrayList;
