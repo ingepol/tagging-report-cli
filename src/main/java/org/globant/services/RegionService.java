@@ -11,19 +11,14 @@ public class RegionService {
     private static RegionService SERVICE;
     private static Region REGION_AWS;
 
-    private RegionService(String region){
-        REGION_AWS = getRerionAwnByValue(region);
+    private RegionService(Region region){
+        REGION_AWS = region;
     }
 
-    public static void createInstance(String region){
+    public static void createInstance(Region region){
         if (SERVICE == null) {
             SERVICE = new RegionService(region);
-        }
-    }
-
-    public static void createDefaultAwsInstance(){
-        if (SERVICE == null) {
-            SERVICE = new RegionService(Region.US_WEST_2.toString());
+            LOG.info("Region selected: " + REGION_AWS.toString());
         }
     }
 
@@ -38,17 +33,4 @@ public class RegionService {
     public Region getRegionGlobalAws(){
         return Region.AWS_GLOBAL;
     }
-
-    private Region getRerionAwnByValue(String region){
-        for (Region regionAws: Region.regions()) {
-            if (regionAws.toString().equals(region)){
-                return regionAws;
-            }
-        }
-        LOG.info("The region " + region + " is not supported. Default region is configured");
-        return Region.US_WEST_2;
-    }
-
-
-
 }
