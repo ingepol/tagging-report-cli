@@ -86,13 +86,8 @@ public class CloudFormation {
                                     .getProvisionedProductByProductId(stackResource.physicalResourceId())
                                     .stream()
                                     .map(rrProd -> {
-                                        ResourceReport resourceReport = ResourceReport
-                                                .classicBuilder().withId(rrProd.getId())
-                                                .withName(rrProd.getName())
-                                                .withType(rrProd.getType())
-                                                .build();
-                                        resourceReport.setCreate(CreatedBy.PIPELINE);
-                                        return resourceReport;
+                                        rrProd.setCreate(CreatedBy.PIPELINE);
+                                        return rrProd;
                                     })
                                     .forEach(resourcesReport::add);
                             break;
