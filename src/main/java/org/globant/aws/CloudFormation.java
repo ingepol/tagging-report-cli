@@ -94,6 +94,7 @@ public class CloudFormation {
                         default:
                             ResourceReport rr = ResourceReport.classicBuilder()
                                     .withType(resourceType)
+                                    .withName(stackResource.physicalResourceId())
                                     .withId(stackResource.physicalResourceId())
                                     .build();
                             rr.setCreate(CreatedBy.PIPELINE);
