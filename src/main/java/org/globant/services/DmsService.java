@@ -3,10 +3,9 @@ package org.globant.services;
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationService;
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServiceClientBuilder;
 import com.amazonaws.services.databasemigrationservice.model.*;
-import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
-import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
+import org.globant.model.TagReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,7 @@ public class DmsService implements IService {
 
     @Override
     public List<TagReport> getTagResource(ResourceReport resource) {
-        LOG.info("Getting tags from " + resource.getType() + ", Identifier: " + resource.getResourceName());
+        LOG.info("Getting tags from " + resource.getType() + ", Identifier: " + resource.getName());
         List<TagReport> tagSet = new ArrayList<>();
         String arn = getOrBuildArnResource(resource);
         ListTagsForResourceRequest request = new ListTagsForResourceRequest().withResourceArn(arn);
@@ -75,69 +74,61 @@ public class DmsService implements IService {
                 .append(StsService.getInstance().getCurrentAccount());
         if (type.equals(DMS_ENDPOINT) || type.equals(DMS_INSTANCE) ||
                 type.equals(DMS_TASK)){
-            return resource.getArn();
+            return resource.getId();
         }
         else if (type.equals(DMS_SUBNET_GROUP))
             arn.append(":subgrp:");
         else
             arn.append(":es:");
 
-        return arn.append(resource.getResourceName()).toString();
+        return arn.append(resource.getName()).toString();
     }
 
     private void addResourceSubnetGroup (){
         DescribeReplicationSubnetGroupsResult resultSubnetGroup = dms
                 .describeReplicationSubnetGroups(new DescribeReplicationSubnetGroupsRequest());
         for (ReplicationSubnetGroup subnetGroup: resultSubnetGroup.getReplicationSubnetGroups()) {
-            ResourceReport resource =  new ResourceReport(
-                    DMS_SUBNET_GROUP,
-                    subnetGroup.getReplicationSubnetGroupIdentifier(),
-                    CreatedBy.CUSTOM
-            );
-            resourceReportSet.add(resource);
+            resourceReportSet.add(
+                    ResourceReport.classicBuilder()
+                            .withId(subnetGroup.getReplicationSubnetGroupIdentifier())
+                            .withType(DMS_SUBNET_GROUP)
+                            .build());
         }
     }
 
     private void addResourcesEndpoints(){
         DescribeEndpointsResult resultEndpoints = dms.describeEndpoints(new DescribeEndpointsRequest());
-
         for (Endpoint endpoint: resultEndpoints.getEndpoints()) {
-            ResourceReport resource =  new ResourceReport(
-                    DMS_ENDPOINT,
-                    endpoint.getEndpointIdentifier(),
-                    CreatedBy.CUSTOM
-            );
-            resource.setArn(endpoint.getEndpointArn());
-            resourceReportSet.add(resource);
+            resourceReportSet.add(
+                    ResourceReport.classicBuilder()
+                            .withId(endpoint.getEndpointArn())
+                            .withName(endpoint.getEndpointIdentifier())
+                            .withType(DMS_ENDPOINT)
+                            .build());
         }
     }
 
     private void addResourcesInstances(){
         DescribeReplicationInstancesResult result = dms
                 .describeReplicationInstances(new DescribeReplicationInstancesRequest());
-
         for (ReplicationInstance repInstance: result.getReplicationInstances()) {
-            ResourceReport resource =  new ResourceReport(
-                    DMS_INSTANCE,
-                    repInstance.getReplicationInstanceIdentifier(),
-                    CreatedBy.CUSTOM
-            );
-            resource.setArn(repInstance.getReplicationInstanceArn());
-            resourceReportSet.add(resource);
+            resourceReportSet.add(
+                    ResourceReport.classicBuilder()
+                            .withId(repInstance.getReplicationInstanceArn())
+                            .withName(repInstance.getReplicationInstanceIdentifier())
+                            .withType(DMS_INSTANCE)
+                            .build());
         }
     }
 
     private void addResourcesTask(){
         DescribeReplicationTasksResult result = dms.describeReplicationTasks(new DescribeReplicationTasksRequest());
-
         for (ReplicationTask repTask: result.getReplicationTasks()) {
-            ResourceReport resource =  new ResourceReport(
-                    DMS_TASK,
-                    repTask.getReplicationTaskIdentifier(),
-                    CreatedBy.CUSTOM
-            );
-            resource.setArn(repTask.getReplicationInstanceArn());
-            resourceReportSet.add(resource);
+            resourceReportSet.add(
+                    ResourceReport.classicBuilder().withId(repTask.getReplicationInstanceArn())
+                            .withName(repTask.getReplicationTaskIdentifier())
+                            .withType(DMS_INSTANCE)
+                            .build());
         }
     }
 }

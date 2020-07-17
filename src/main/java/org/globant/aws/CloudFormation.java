@@ -72,24 +72,32 @@ public class CloudFormation {
             DescribeStackResourcesResponse response = cwf.describeStackResources(describeStackResourcesRequest);
             for (StackResource stackResource: response.stackResources()) {
                 if(TypesAws.hasKey(stackResource.resourceType())){
-                    ResourceReport resourceReport = new ResourceReport(
-                            TypesAws.fromKey(stackResource.resourceType()),
-                            CreatedBy.PIPELINE);
+                    TypesAws resourceType = TypesAws.fromKey(stackResource.resourceType());
                     IServiceCatalog iService = ServiceCatalogService.getInstance();
-                    switch (resourceReport.getType()){
-                        case PORTAFOLIO:
-                            resourceReport = iService
-                                    .getPortfolioById(stackResource.physicalResourceId());
-                            resourcesReport.add(resourceReport);
+
+                    switch (resourceType){
+                        case PORTFOLIO:
+                            ResourceReport rrPort = iService.getPortfolioById(stackResource.physicalResourceId());
+                            rrPort.setCreate(CreatedBy.PIPELINE);
+                            resourcesReport.add(rrPort);
                             break;
                         case PRODUCT:
-                            List<ResourceReport> provisionedSetProduct = iService
-                                    .getProvisionedProductByProductId(stackResource.physicalResourceId());
-                            resourcesReport.addAll(provisionedSetProduct);
+                            iService
+                                    .getProvisionedProductByProductId(stackResource.physicalResourceId())
+                                    .stream()
+                                    .map(rrProd -> {
+                                        rrProd.setCreate(CreatedBy.PIPELINE);
+                                        return rrProd;
+                                    })
+                                    .forEach(resourcesReport::add);
                             break;
                         default:
-                            resourceReport.setResourceName(stackResource.physicalResourceId());
-                            resourcesReport.add(resourceReport);
+                            ResourceReport rr = ResourceReport.classicBuilder()
+                                    .withType(resourceType)
+                                    .withId(stackResource.physicalResourceId())
+                                    .build();
+                            rr.setCreate(CreatedBy.PIPELINE);
+                            resourcesReport.add(rr);
                             break;
                     }
                 } else {

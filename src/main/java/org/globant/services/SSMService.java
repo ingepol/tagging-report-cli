@@ -1,6 +1,5 @@
 package org.globant.services;
 
-import org.globant.enums.CreatedBy;
 import org.globant.model.ResourceReport;
 import org.globant.model.TagReport;
 import org.slf4j.Logger;
@@ -62,12 +61,12 @@ public class SSMService implements IService {
     }
 
     public List<TagReport> getTagResource(ResourceReport resource){
-        LOG.info("Getting tags from a parameter, Name:  " + resource.getResourceName());
-        List<TagReport> tagSet = new ArrayList<>();
+        LOG.info("Getting tags from a parameter, Name:  " + resource.getName());
+        List<TagReport> tagSet = new ArrayList<TagReport>();
 
         ListTagsForResourceRequest request = ListTagsForResourceRequest
                 .builder()
-                .resourceId(resource.getResourceName())
+                .resourceId(resource.getName())
                 .resourceType(resource.getType().getValue())
                 .build();
 
@@ -80,11 +79,10 @@ public class SSMService implements IService {
     }
 
     private ResourceReport reportParameter(ParameterMetadata parameter) {
-        ResourceReport report = new ResourceReport(
-                PARAMETER,
-                parameter.name(),
-                CreatedBy.CUSTOM
-        );
-        return report;
+        return ResourceReport.classicBuilder()
+                .withType(PARAMETER)
+                .withName(parameter.name())
+                .withId(parameter.name())
+                .build();
     }
 }
