@@ -82,6 +82,7 @@ public class SSMService implements IService {
         return ResourceReport.classicBuilder()
                 .withType(PARAMETER)
                 .withName(parameter.name())
+                .withId(parameter.name())
                 .build();
     }
 }
