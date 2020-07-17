@@ -138,8 +138,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
 
     private ResourceReport reportPortfolio(PortfolioDetail portfolio) {
         LOG.debug(portfolio.toString());
-        return ResourceReport
-                .classicBuilder()
+        return ResourceReport.classicBuilder()
                 .withType(PORTFOLIO)
                 .withName(portfolio.displayName())
                 .withId(portfolio.id())
@@ -148,8 +147,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
 
     private ResourceReport reportProvisionedProduct(ProvisionedProductAttribute product) {
         LOG.debug(product.toString());
-        return ResourceReport
-                .classicBuilder()
+        return ResourceReport.classicBuilder()
                 .withType(PRODUCT)
                 .withName(product.name())
                 .withId(product.provisioningArtifactId())

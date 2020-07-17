@@ -89,7 +89,8 @@ public class DmsService implements IService {
                 .describeReplicationSubnetGroups(new DescribeReplicationSubnetGroupsRequest());
         for (ReplicationSubnetGroup subnetGroup: resultSubnetGroup.getReplicationSubnetGroups()) {
             resourceReportSet.add(
-                    ResourceReport.classicBuilder().withId(subnetGroup.getReplicationSubnetGroupIdentifier())
+                    ResourceReport.classicBuilder()
+                            .withId(subnetGroup.getReplicationSubnetGroupIdentifier())
                             .withType(DMS_SUBNET_GROUP)
                             .build());
         }
@@ -99,7 +100,8 @@ public class DmsService implements IService {
         DescribeEndpointsResult resultEndpoints = dms.describeEndpoints(new DescribeEndpointsRequest());
         for (Endpoint endpoint: resultEndpoints.getEndpoints()) {
             resourceReportSet.add(
-                    ResourceReport.classicBuilder().withId(endpoint.getEndpointArn())
+                    ResourceReport.classicBuilder()
+                            .withId(endpoint.getEndpointArn())
                             .withName(endpoint.getEndpointIdentifier())
                             .withType(DMS_ENDPOINT)
                             .build());
@@ -111,7 +113,8 @@ public class DmsService implements IService {
                 .describeReplicationInstances(new DescribeReplicationInstancesRequest());
         for (ReplicationInstance repInstance: result.getReplicationInstances()) {
             resourceReportSet.add(
-                    ResourceReport.classicBuilder().withId(repInstance.getReplicationInstanceArn())
+                    ResourceReport.classicBuilder()
+                            .withId(repInstance.getReplicationInstanceArn())
                             .withName(repInstance.getReplicationInstanceIdentifier())
                             .withType(DMS_INSTANCE)
                             .build());

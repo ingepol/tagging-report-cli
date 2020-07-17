@@ -80,8 +80,8 @@ public class SSMService implements IService {
 
     private ResourceReport reportParameter(ParameterMetadata parameter) {
         return ResourceReport.classicBuilder()
-                .withName(parameter.name())
                 .withType(PARAMETER)
+                .withName(parameter.name())
                 .build();
     }
 }
