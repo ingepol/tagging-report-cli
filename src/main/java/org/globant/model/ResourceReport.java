@@ -154,4 +154,18 @@ public class ResourceReport {
     public interface AddType {
         ResourceReport withName(String name);
     }
+
+    @Override
+    public String toString() {
+        return "ResourceReport{" +
+                "type=" + type +
+                ", name='" + name + '\'' +
+                ", id='" + id + '\'' +
+                ", create=" + create +
+                ", classic=" + classic +
+                ", modern=" + modern +
+                ", tags=" + tags +
+                ", missingTags=" + missingTags +
+                '}';
+    }
 }
