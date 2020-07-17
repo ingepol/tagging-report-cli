@@ -1,6 +1,5 @@
 package org.globant.services;
 
-import org.globant.enums.CreatedBy;
 import org.globant.model.ResourceReport;
 import org.globant.model.TagReport;
 import org.slf4j.Logger;
@@ -80,9 +79,9 @@ public class SSMService implements IService {
     }
 
     private ResourceReport reportParameter(ParameterMetadata parameter) {
-        return ResourceReport.builder(parameter.name())
+        return ResourceReport.classicBuilder()
+                .withName(parameter.name())
                 .withType(PARAMETER)
-                .withCreate(CreatedBy.CUSTOM)
                 .build();
     }
 }

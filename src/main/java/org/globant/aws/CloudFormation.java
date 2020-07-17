@@ -75,24 +75,36 @@ public class CloudFormation {
                     TypesAws resourceType = TypesAws.fromKey(stackResource.resourceType());
                     IServiceCatalog iService = ServiceCatalogService.getInstance();
 
-                    ResourceReport.Builder builder = ResourceReport.builder(stackResource.physicalResourceId());
                     switch (resourceType){
                         case PORTFOLIO:
-                            builder.withResource(iService.getPortfolioById(stackResource.physicalResourceId()));
+                            ResourceReport rrPort = iService.getPortfolioById(stackResource.physicalResourceId());
+                            rrPort.setCreate(CreatedBy.PIPELINE);
+                            resourcesReport.add(rrPort);
                             break;
                         case PRODUCT:
-                            List<ResourceReport> provisionedSetProduct =
-                                    iService.getProvisionedProductByProductId(stackResource.physicalResourceId());
-                            if(provisionedSetProduct.size()!=1) {
-                                throw new IllegalArgumentException("Invalid product ID: expected to be unique");
-                            }
-                            builder.withResource(provisionedSetProduct.get(0));
+                            iService
+                                    .getProvisionedProductByProductId(stackResource.physicalResourceId())
+                                    .stream()
+                                    .map(rrProd -> {
+                                        ResourceReport resourceReport = ResourceReport
+                                                .classicBuilder().withId(rrProd.getId())
+                                                .withName(rrProd.getName())
+                                                .withType(rrProd.getType())
+                                                .build();
+                                        resourceReport.setCreate(CreatedBy.PIPELINE);
+                                        return resourceReport;
+                                    })
+                                    .forEach(resourcesReport::add);
                             break;
                         default:
-                            builder.withType(resourceType);
+                            ResourceReport rr = ResourceReport.classicBuilder()
+                                    .withType(resourceType)
+                                    .withId(stackResource.physicalResourceId())
+                                    .build();
+                            rr.setCreate(CreatedBy.PIPELINE);
+                            resourcesReport.add(rr);
                             break;
                     }
-                    resourcesReport.add(builder.withCreate(CreatedBy.PIPELINE).build());
                 } else {
                     LOG.warn("Type " + stackResource.resourceType() +
                             " has not been implemented or not support tagging");

@@ -1,6 +1,5 @@
 package org.globant.services;
 
-import org.globant.enums.CreatedBy;
 import org.globant.model.ResourceReport;
 import org.globant.model.TagReport;
 import org.slf4j.Logger;
@@ -9,7 +8,10 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.servicecatalog.ServiceCatalogClient;
 import software.amazon.awssdk.services.servicecatalog.model.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.globant.enums.TypesAws.PORTFOLIO;
 import static org.globant.enums.TypesAws.PRODUCT;
@@ -38,7 +40,8 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
         List<ResourceReport> resources = new ArrayList<>();
 
         LOG.debug("Getting PORTFOLIO resources..");
-        client.listPortfolios(ListPortfoliosRequest.builder().build()).portfolioDetails().stream()
+        client.listPortfolios(ListPortfoliosRequest.builder().build()).portfolioDetails()
+                .stream()
                 .map(this::reportPortfolio)
                 .forEach(resources::add);
         LOG.debug("Getting PRODUCT resources..");
@@ -114,7 +117,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
         );
         List<ProvisionedProductAttribute> provisionedProducts = new ArrayList<>(response.provisionedProducts());
         while(response.nextPageToken() != null){
-            LOG.info("Fetched provisioned producs: " + provisionedProducts.size());
+            LOG.info("Fetched provisioned products: " + provisionedProducts.size());
             response = client.searchProvisionedProducts(
                     SearchProvisionedProductsRequest.builder()
                             .accessLevelFilter(ACCOUNT_FILTER)
@@ -124,7 +127,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
             );
             provisionedProducts.addAll(response.provisionedProducts());
         }
-        LOG.info("Fetched provisioned producs: " + provisionedProducts.size());
+        LOG.info("Fetched provisioned products: " + provisionedProducts.size());
         provisionedProducts
                 .stream()
                 .filter(r -> r.status().equals(ProvisionedProductStatus.AVAILABLE))
@@ -134,22 +137,22 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
     }
 
     private ResourceReport reportPortfolio(PortfolioDetail portfolio) {
-        return ResourceReport.builder(portfolio.id())
-                .withName(portfolio.displayName())
-                .withCreate(CreatedBy.CUSTOM)
+        LOG.debug(portfolio.toString());
+        return ResourceReport
+                .classicBuilder()
                 .withType(PORTFOLIO)
+                .withName(portfolio.displayName())
+                .withId(portfolio.id())
                 .build();
     }
 
     private ResourceReport reportProvisionedProduct(ProvisionedProductAttribute product) {
-        return ResourceReport.builder(product.provisioningArtifactId())
-                .withName(product.name())
-                .withCreate(CreatedBy.CUSTOM)
+        LOG.debug(product.toString());
+        return ResourceReport
+                .classicBuilder()
                 .withType(PRODUCT)
+                .withName(product.name())
+                .withId(product.provisioningArtifactId())
                 .build();
     }
-
-
-
-
 }

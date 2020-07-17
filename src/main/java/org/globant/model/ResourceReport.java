@@ -6,23 +6,27 @@ import org.globant.enums.TypesAws;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static org.globant.enums.TypesAws.DATABASE;
+
 public class ResourceReport {
-    private final String id;
     private final TypesAws type;
-    private final CreatedBy create;
-    private String name;
+    private final String name;
+    private final String id;
+
+    private CreatedBy create = CreatedBy.CUSTOM;
     private Integer classic;
     private Integer modern;
     private List<TagReport> tags = Collections.emptyList();
     private List<String> missingTags = Collections.emptyList();
 
-    private ResourceReport(ResourceReport.Builder builder) {
-        this.id = builder.id;
-        this.name = builder.name;
-        this.type = builder.type;
-        this.create = builder.create;
+    private ResourceReport(TypesAws type, String name, String id) {
+        this.type = type;
+        this.name = name;
+        this.id = id;
     }
 
     public String getStringTags() {
@@ -41,16 +45,16 @@ public class ResourceReport {
         return String.join(",", missingTags);
     }
 
-    public String getId() {
-        return id;
+    public TypesAws getType() {
+        return type;
     }
 
     public String getName() {
         return name;
     }
 
-    public TypesAws getType() {
-        return type;
+    public String getId() {
+        return id;
     }
 
     public CreatedBy getCreate() {
@@ -63,6 +67,10 @@ public class ResourceReport {
 
     public Integer getModern() {
         return modern;
+    }
+
+    public void setCreate(CreatedBy create) {
+        this.create = create;
     }
 
     public void setClassic(Integer classic) {
@@ -81,46 +89,69 @@ public class ResourceReport {
         this.missingTags = missingTags;
     }
 
-    public static ResourceReport.Builder builder(String id) {
-        return new ResourceReport.Builder(id);
+    public static ResourceReport.ClassicBuilder classicBuilder() {
+        return new ResourceReport.ClassicBuilder();
     }
 
-    public static class Builder {
-        private final String id;
+    public static class ClassicBuilder {
+        private String id;
         private String name;
         private TypesAws type;
-        private CreatedBy create;
 
-        public Builder(String id) {
+        public ClassicBuilder withId(String id) {
             this.id = id;
-            this.name = id;
+            return this;
         }
 
-        public Builder withName(String name) {
+        public ClassicBuilder withName(String name) {
             this.name = name;
             return this;
         }
 
 
-        public Builder withType(TypesAws type) {
+        public ClassicBuilder withType(TypesAws type) {
             this.type = type;
             return this;
         }
 
-        public Builder withCreate(CreatedBy created) {
-            this.create = created;
-            return this;
-        }
-
-        public Builder withResource(ResourceReport resource) {
-            this.name = resource.name;
-            this.type = resource.type;
-            this.create = resource.create;
-            return this;
-        }
-
         public ResourceReport build() {
-            return new ResourceReport(this);
+            return new ResourceReport(this.type, this.name, this.id);
         }
+    }
+
+    public static Builder with(String region, String account) {
+        return (type, name) -> new ResourceReport(
+                    type,
+                    name,
+                    type.getArn().apply(region).apply(account).apply(name)
+            );
+    }
+
+    public interface Builder {
+        ResourceReport build(TypesAws type, String name);
+    }
+
+    public static ResourceBuilder builder() {
+        return region -> account -> type -> name -> new ResourceReport(
+                type,
+                name,
+                type.getArn().apply(region).apply(account).apply(name)
+        );
+    }
+
+    public interface ResourceBuilder {
+        ResourceReport.AddRegion withRegion(String region);
+    }
+
+    public interface AddRegion {
+        ResourceReport.AddAccount withAccount(String account);
+    }
+
+    public interface AddAccount {
+        ResourceReport.AddType withType(TypesAws type);
+    }
+
+    public interface AddType {
+        ResourceReport withName(String name);
     }
 }

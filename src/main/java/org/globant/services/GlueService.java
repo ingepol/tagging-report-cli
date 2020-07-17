@@ -1,6 +1,5 @@
 package org.globant.services;
 
-import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
 import org.globant.model.ResourceReport;
 import org.globant.model.TagReport;
@@ -8,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.glue.GlueClient;
-import software.amazon.awssdk.services.glue.model.GetDatabasesRequest;
-import software.amazon.awssdk.services.glue.model.ListCrawlersRequest;
-import software.amazon.awssdk.services.glue.model.ListJobsRequest;
-import software.amazon.awssdk.services.glue.model.ListTriggersRequest;
+import software.amazon.awssdk.services.glue.model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,51 +30,50 @@ public class GlueService implements IService {
 
     private final GlueClient client;
     private final Map<TypesAws, Consumer<List<ResourceReport>>> listings;
-    private final Map<TypesAws, Consumer<List<ResourceReport>>> details;
     private GlueService() {
         Region region = RegionService.getInstance().getRegionAws();
+        String account = StsService.getInstance().getCurrentAccount();
         client = GlueClient.builder().region(region).build();
         listings = new HashMap<>();
-        details = new HashMap<>();
 
-        listings.put(CRAWLER, resources -> client
-                .listCrawlers(ListCrawlersRequest.builder().build())
-                .crawlerNames()
-                .stream()
-                .map(crawlerName -> ResourceReport.builder(crawlerName)
-                        .withCreate(CreatedBy.CUSTOM)
-                        .withType(CRAWLER)
-                        .build())
-                .forEach(resources::add));
+        listings.put(CRAWLER, resources -> { client
+                    .listCrawlers(ListCrawlersRequest.builder().build())
+                    .crawlerNames()
+                    .stream()
+                    .map(crawlerName -> ResourceReport.builder()
+                            .withRegion(region.id())
+                            .withAccount(account)
+                            .withType(CRAWLER)
+                            .withName(crawlerName))
+                    .forEach(resources::add);
+        });
 
         listings.put(DATABASE, resources -> client
                 .getDatabases(GetDatabasesRequest.builder().build())
                 .databaseList()
                 .stream()
-                .map(database -> ResourceReport.builder(database.name())
-                        .withCreate(CreatedBy.CUSTOM)
-                        .withType(DATABASE)
-                        .build())
+                .map(Database::name)
+                .map(database -> ResourceReport
+                        .with(region.id(), account)
+                        .build(DATABASE, database))
                 .forEach(resources::add));
 
         listings.put(JOB, resources -> client
                 .listJobs(ListJobsRequest.builder().build())
                 .jobNames()
                 .stream()
-                .map(jobName -> ResourceReport.builder(jobName)
-                        .withCreate(CreatedBy.CUSTOM)
-                        .withType(JOB)
-                        .build())
+                .map(jobName -> ResourceReport
+                        .with(region.id(), account)
+                        .build(JOB, jobName))
                 .forEach(resources::add));
 
         listings.put(TRIGGER, resources -> client
                 .listTriggers(ListTriggersRequest.builder().build())
                 .triggerNames()
                 .stream()
-                .map(triggerName -> ResourceReport.builder(triggerName)
-                        .withCreate(CreatedBy.CUSTOM)
-                        .withType(JOB)
-                        .build())
+                .map(triggerName -> ResourceReport
+                        .with(region.id(), account)
+                        .build(JOB, triggerName))
                 .forEach(resources::add));
     }
 
@@ -93,12 +88,16 @@ public class GlueService implements IService {
     }
 
     @Override
-    public List<ResourceReport> getResourceBy(String filter) {
-        return null;
+    public List<TagReport> getTagResource(ResourceReport resource) {
+        List<TagReport> tags = new ArrayList<>();
+        client.getTags(GetTagsRequest.builder().resourceArn(resource.getId()).build())
+                .tags()
+                .forEach((key, value) -> tags.add(new TagReport(key, value)));
+        return tags;
     }
 
     @Override
-    public List<TagReport> getTagResource(ResourceReport resource) {
+    public List<ResourceReport> getResourceBy(String filter) {
         return null;
     }
 }

@@ -3,10 +3,9 @@ package org.globant.services;
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationService;
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServiceClientBuilder;
 import com.amazonaws.services.databasemigrationservice.model.*;
-import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
-import org.globant.model.TagReport;
 import org.globant.model.ResourceReport;
+import org.globant.model.TagReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +89,7 @@ public class DmsService implements IService {
                 .describeReplicationSubnetGroups(new DescribeReplicationSubnetGroupsRequest());
         for (ReplicationSubnetGroup subnetGroup: resultSubnetGroup.getReplicationSubnetGroups()) {
             resourceReportSet.add(
-                    ResourceReport.builder(subnetGroup.getReplicationSubnetGroupIdentifier())
-                            .withCreate(CreatedBy.CUSTOM)
+                    ResourceReport.classicBuilder().withId(subnetGroup.getReplicationSubnetGroupIdentifier())
                             .withType(DMS_SUBNET_GROUP)
                             .build());
         }
@@ -101,9 +99,8 @@ public class DmsService implements IService {
         DescribeEndpointsResult resultEndpoints = dms.describeEndpoints(new DescribeEndpointsRequest());
         for (Endpoint endpoint: resultEndpoints.getEndpoints()) {
             resourceReportSet.add(
-                    ResourceReport.builder(endpoint.getEndpointArn())
+                    ResourceReport.classicBuilder().withId(endpoint.getEndpointArn())
                             .withName(endpoint.getEndpointIdentifier())
-                            .withCreate(CreatedBy.CUSTOM)
                             .withType(DMS_ENDPOINT)
                             .build());
         }
@@ -114,9 +111,8 @@ public class DmsService implements IService {
                 .describeReplicationInstances(new DescribeReplicationInstancesRequest());
         for (ReplicationInstance repInstance: result.getReplicationInstances()) {
             resourceReportSet.add(
-                    ResourceReport.builder(repInstance.getReplicationInstanceArn())
+                    ResourceReport.classicBuilder().withId(repInstance.getReplicationInstanceArn())
                             .withName(repInstance.getReplicationInstanceIdentifier())
-                            .withCreate(CreatedBy.CUSTOM)
                             .withType(DMS_INSTANCE)
                             .build());
         }
@@ -126,9 +122,8 @@ public class DmsService implements IService {
         DescribeReplicationTasksResult result = dms.describeReplicationTasks(new DescribeReplicationTasksRequest());
         for (ReplicationTask repTask: result.getReplicationTasks()) {
             resourceReportSet.add(
-                    ResourceReport.builder(repTask.getReplicationInstanceArn())
+                    ResourceReport.classicBuilder().withId(repTask.getReplicationInstanceArn())
                             .withName(repTask.getReplicationTaskIdentifier())
-                            .withCreate(CreatedBy.CUSTOM)
                             .withType(DMS_INSTANCE)
                             .build());
         }
