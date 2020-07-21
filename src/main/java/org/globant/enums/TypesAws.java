@@ -19,18 +19,51 @@ public enum TypesAws {
     TOPIC("AWS::SNS::Topic", "Topic", null),
 
     //Service Catalog
-    PORTFOLIO("AWS::ServiceCatalog::Portfolio",             "Portfolio", ARN_AWS("catalog", "portfolio")),
-    PRODUCT  ("AWS::ServiceCatalog::CloudFormationProduct", "Product",   ARN_AWS("catalog", "product")),
+    PORTFOLIO             ("AWS::ServiceCatalog::Portfolio",             "Portfolio",
+            ARN_F2("catalog", "portfolio")),
+    PRODUCT               ("AWS::ServiceCatalog::CloudFormationProduct", "Product",
+            ARN_F2("catalog", "product")),
+    ROLE_CONSTRAINT       ("AWS::ServiceCatalog::LaunchRoleConstraint",          "LaunchRoleConstraint",
+            null),
+    PRINCIPAL_ASSOCIATION ("AWS::ServiceCatalog::PortfolioPrincipalAssociation", "PortfolioPrincipalAssociation",
+            null),
+    PRODUCT_ASSOCIATION   ("AWS::ServiceCatalog::PortfolioProductAssociation",   "PortfolioProductAssociation",
+            null),
+    TAG_OPTION_ASSOCIATION("AWS::ServiceCatalog::TagOptionAssociation",          "TagOptionAssociation",
+            null),
+    TAG_OPTION            ("AWS::ServiceCatalog::TagOption",                     "TagOption",
+            null),
 
     //Glue Service
-    DATABASE("AWS::Glue::Database", "Database", ARN_AWS("glue", "database")),
-    CRAWLER ("AWS::Glue::Crawler",  "Crawler",  ARN_AWS("glue", "crawler")),
-    JOB     ("AWS::Glue::Job",      "Job",      ARN_AWS("glue", "job")),
-    TRIGGER ("AWS::Glue::Trigger",  "Trigger",  ARN_AWS("glue", "trigger")),
+    DATABASE("AWS::Glue::Database", "Database", ARN_F2("glue", "database")),
+    CRAWLER ("AWS::Glue::Crawler",  "Crawler",  ARN_F2("glue", "crawler")),
+    JOB     ("AWS::Glue::Job",      "Job",      ARN_F2("glue", "job")),
+    TRIGGER ("AWS::Glue::Trigger",  "Trigger",  ARN_F2("glue", "trigger")),
     ;
 
-    private static Function<String, Function<String, Function<String, String>>> ARN_AWS(String service, String resource) {
-        return region -> account -> name -> String.format("arn:aws:%s:%s:%s:%s/%s", service, region, account, resource, name);
+
+    /**
+     * https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arns-syntax
+     * arn:partition:service:region:account-id:resource-id
+     */
+    private static Function<String, Function<String, Function<String, String>>> ARN_F1(String service) {
+        return region -> account -> id -> String.format("arn:aws:%s:%s:%s:%s", service, region, account, id);
+    }
+
+    /**
+     * https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arns-syntax
+     * arn:partition:service:region:account-id:resource-type/resource-id
+     */
+    private static Function<String, Function<String, Function<String, String>>> ARN_F2(String service, String resource) {
+        return region -> account -> id -> String.format("arn:aws:%s:%s:%s:%s/%s", service, region, account, resource, id);
+    }
+
+    /**
+     * https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#arns-syntax
+     * arn:partition:service:region:account-id:resource-type:resource-id
+     */
+    private static Function<String, Function<String, Function<String, String>>> ARN_F3(String service, String resource) {
+        return region -> account -> id -> String.format("arn:aws:%s:%s:%s:%s:%s", service, region, account, resource, id);
     }
 
     private static final Set<String> KEYS = new HashSet<>();

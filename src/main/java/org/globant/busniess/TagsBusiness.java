@@ -7,7 +7,7 @@ import org.globant.model.TagReport;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TagsBusniess {
+public class TagsBusiness {
 
     private List<TagReport> getClassicTags(List<TagReport> tags) {
         return tags

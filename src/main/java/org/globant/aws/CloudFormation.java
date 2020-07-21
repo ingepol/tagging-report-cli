@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import software.amazon.awssdk.services.cloudformation.model.*;
+import software.amazon.awssdk.services.servicecatalog.model.ProvisionedProductAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,20 +74,15 @@ public class CloudFormation {
             for (StackResource stackResource: response.stackResources()) {
                 if(TypesAws.hasKey(stackResource.resourceType())){
                     TypesAws resourceType = TypesAws.fromKey(stackResource.resourceType());
-                    IServiceCatalog iService = ServiceCatalogService.getInstance();
+                    IServiceCatalog iServiceCatalog = ServiceCatalogService.getInstance();
 
                     switch (resourceType){
-                        case PORTFOLIO:
-                            ResourceReport rrPort = iService.getPortfolioById(stackResource.physicalResourceId());
-                            rrPort.setCreate(CreatedBy.PIPELINE);
-                            resourcesReport.add(rrPort);
-                            break;
                         case PRODUCT:
-                            iService
+                            iServiceCatalog
                                     .getProvisionedProductByProductId(stackResource.physicalResourceId())
                                     .stream()
                                     .map(rrProd -> {
-                                        rrProd.setCreate(CreatedBy.PIPELINE);
+                                        rrProd.setCreatedBy(CreatedBy.PIPELINE);
                                         return rrProd;
                                     })
                                     .forEach(resourcesReport::add);
@@ -97,13 +93,12 @@ public class CloudFormation {
                                     .withName(stackResource.physicalResourceId())
                                     .withId(stackResource.physicalResourceId())
                                     .build();
-                            rr.setCreate(CreatedBy.PIPELINE);
+                            rr.setCreatedBy(CreatedBy.PIPELINE);
                             resourcesReport.add(rr);
                             break;
                     }
                 } else {
-                    LOG.warn("Type " + stackResource.resourceType() +
-                            " has not been implemented or not support tagging");
+                    LOG.warn("Type " + stackResource.resourceType() + " has not been implemented");
                 }
             }
         }
