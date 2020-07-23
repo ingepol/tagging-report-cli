@@ -118,7 +118,7 @@ public class ResourceReport {
         return (type, name) -> new ResourceReport(
                     type,
                     name,
-                    type.getArn().apply(region).apply(account).apply(name)
+                    type.getId().apply(region).apply(account).apply(name)
             );
     }
 
@@ -130,7 +130,7 @@ public class ResourceReport {
         return region -> account -> type -> name -> new ResourceReport(
                 type,
                 name,
-                type.getArn().apply(region).apply(account).apply(name)
+                type.getId().apply(region).apply(account).apply(name)
         );
     }
 

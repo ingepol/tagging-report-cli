@@ -1,5 +1,6 @@
 package org.globant.services;
 
+import org.apache.commons.lang3.StringUtils;
 import org.globant.enums.TypesAws;
 import org.globant.model.ResourceReport;
 import org.globant.model.TagReport;
@@ -73,7 +74,7 @@ public class GlueService implements IService {
                 .stream()
                 .map(triggerName -> ResourceReport
                         .with(region.id(), account)
-                        .build(JOB, triggerName))
+                        .build(TRIGGER, triggerName))
                 .forEach(resources::add));
     }
 
@@ -89,6 +90,9 @@ public class GlueService implements IService {
 
     @Override
     public List<TagReport> getTagResource(ResourceReport resource) {
+        if(StringUtils.isEmpty(resource.getId())) {
+            throw new UnsupportedOperationException(resource.getType().getKey() + " does not support tags");
+        }
         List<TagReport> tags = new ArrayList<>();
         client.getTags(GetTagsRequest.builder().resourceArn(resource.getId()).build())
                 .tags()

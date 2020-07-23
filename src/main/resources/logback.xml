@@ -4,8 +4,21 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%5p) PID --- [%15.15t] %cyan(%40.40c{1.}) : %m%n</pattern>
         </encoder>
     </appender>
+
+    <appender name="NOT_IMPLEMENTED_APPENDER" class="ch.qos.logback.core.FileAppender">
+        <file>servicesNotImplemented.log</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <logger name="org.globant" level="DEBUG">
         <appender-ref ref="stdout"/>
     </logger>
+    <logger name="NOT_IMPLEMENTED_LOGGER" level="INFO">
+        <appender-ref ref="NOT_IMPLEMENTED_APPENDER" />
+    </logger>
+
     <root level="ERROR"/>
 </configuration>

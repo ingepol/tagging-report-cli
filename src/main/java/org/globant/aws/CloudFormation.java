@@ -5,28 +5,30 @@ import org.globant.enums.TypesAws;
 import org.globant.model.ResourceReport;
 import org.globant.services.IServiceCatalog;
 import org.globant.services.ServiceCatalogService;
+import org.globant.services.StsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import software.amazon.awssdk.services.cloudformation.model.*;
-import software.amazon.awssdk.services.servicecatalog.model.ProvisionedProductAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CloudFormation {
-
     private static final Logger LOG = LoggerFactory.getLogger(CloudFormation.class);
+    private static final Logger NOP = LoggerFactory.getLogger("NOT_IMPLEMENTED_LOGGER");
+    private static final Region REGION = Region.US_WEST_2;
 
-    CloudFormationClient cwf;
+    private final CloudFormationClient cwf;
+    private final String account;
 
     public CloudFormation(){
-        Region region = Region.US_WEST_2;
         cwf = CloudFormationClient.builder()
-                .region(region)
+                .region(REGION)
                 .build();
+        account = StsService.getInstance().getCurrentAccount();
     }
 
     public List<Stack> listStacks(String filterStacks) {
@@ -76,33 +78,37 @@ public class CloudFormation {
                     TypesAws resourceType = TypesAws.fromKey(stackResource.resourceType());
                     IServiceCatalog iServiceCatalog = ServiceCatalogService.getInstance();
 
-                    switch (resourceType){
-                        case PRODUCT:
-                            iServiceCatalog
-                                    .getProvisionedProductByProductId(stackResource.physicalResourceId())
-                                    .stream()
-                                    .map(rrProd -> {
-                                        rrProd.setCreatedBy(CreatedBy.PIPELINE);
-                                        return rrProd;
-                                    })
-                                    .forEach(resourcesReport::add);
-                            break;
-                        default:
-                            ResourceReport rr = ResourceReport.classicBuilder()
-                                    .withType(resourceType)
-                                    .withName(stackResource.physicalResourceId())
-                                    .withId(stackResource.physicalResourceId())
-                                    .build();
-                            rr.setCreatedBy(CreatedBy.PIPELINE);
-                            resourcesReport.add(rr);
-                            break;
+                    if (TypesAws.PRODUCT == resourceType) {
+                        iServiceCatalog
+                                .getProvisionedResourceByProductId(stackResource.physicalResourceId())
+                                .stream()
+                                .peek(product -> product.setCreatedBy(CreatedBy.PIPELINE))
+                                .forEach(resourcesReport::add);
+                        iServiceCatalog
+                                .getProvisionedProductByProductId(stackResource.physicalResourceId())
+                                .forEach(pa -> {
+                                    LOG.info("Getting stacks matching " + pa.id());
+                                    getAllStackResources(listStacks(pa.id()))
+                                            .stream()
+                                            .peek(productResource -> productResource.setCreatedBy(CreatedBy.CUSTOM))
+                                            .forEach(resourcesReport::add);
+                                });
+                    } else {
+                        LOG.debug("Creating ResourceReport for " + stackResource);
+                        ResourceReport rr = ResourceReport.builder()
+                                .withRegion(REGION.id())
+                                .withAccount(account)
+                                .withType(resourceType)
+                                .withName(stackResource.physicalResourceId());
+                        rr.setCreatedBy(CreatedBy.PIPELINE);
+                        resourcesReport.add(rr);
                     }
                 } else {
                     LOG.warn("Type " + stackResource.resourceType() + " has not been implemented");
+                    NOP.info(stackResource.resourceType());
                 }
             }
         }
         return resourcesReport;
-
     }
 }

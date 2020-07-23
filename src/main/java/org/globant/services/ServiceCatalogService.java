@@ -15,21 +15,23 @@ import static org.globant.enums.TypesAws.PRODUCT;
 
 public class ServiceCatalogService implements IService, IServiceCatalog {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceCatalogService.class);
-    private static ServiceCatalogService SERVICE;
-    private ServiceCatalogClient client;
     private static final AccessLevelFilter ACCOUNT_FILTER = AccessLevelFilter.builder()
             .key(AccessLevelFilterKey.ACCOUNT).value("self").build();
 
-    private ServiceCatalogService(){
-        Region region = RegionService.getInstance().getRegionAws();
-        client = ServiceCatalogClient.builder().region(region).build();
-    }
+    private static ServiceCatalogService SERVICE;
 
     public static ServiceCatalogService getInstance() {
         if (SERVICE == null) {
             SERVICE = new ServiceCatalogService();
         }
         return SERVICE;
+    }
+
+    private final ServiceCatalogClient client;
+
+    private ServiceCatalogService(){
+        Region region = RegionService.getInstance().getRegionAws();
+        client = ServiceCatalogClient.builder().region(region).build();
     }
 
     @Override
@@ -102,8 +104,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
     }
 
     @Override
-    public List<ResourceReport> getProvisionedProductByProductId(String id){
-        List<ResourceReport> resources = new ArrayList<>();
+    public List<ProvisionedProductAttribute> getProvisionedProductByProductId(String id) {
         HashMap<ProvisionedProductViewFilterBy, List<String>> filterProduct = new HashMap<>();
         filterProduct.put(ProvisionedProductViewFilterBy.SEARCH_QUERY, Collections.singletonList(id));
         SearchProvisionedProductsResponse response = client.searchProvisionedProducts(
@@ -113,7 +114,7 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
                         .build()
         );
         List<ProvisionedProductAttribute> provisionedProducts = new ArrayList<>(response.provisionedProducts());
-        while(response.nextPageToken() != null){
+        while (response.nextPageToken() != null) {
             LOG.info("Fetched provisioned products: " + provisionedProducts.size());
             response = client.searchProvisionedProducts(
                     SearchProvisionedProductsRequest.builder()
@@ -125,9 +126,17 @@ public class ServiceCatalogService implements IService, IServiceCatalog {
             provisionedProducts.addAll(response.provisionedProducts());
         }
         LOG.info("Fetched provisioned products: " + provisionedProducts.size());
+        return provisionedProducts;
+    }
+
+    @Override
+    public List<ResourceReport> getProvisionedResourceByProductId(String id){
+        List<ResourceReport> resources = new ArrayList<>();
+        List<ProvisionedProductAttribute> provisionedProducts = getProvisionedProductByProductId(id);
         provisionedProducts
                 .stream()
                 .filter(r -> r.status().equals(ProvisionedProductStatus.AVAILABLE))
+                .peek(ppa -> LOG.debug("Creating PRODUCT ResourceReport for " + ppa.toString()))
                 .map(this::reportProvisionedProduct)
                 .forEach(resources::add);
         return resources;
