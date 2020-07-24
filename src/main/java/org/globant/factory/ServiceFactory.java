@@ -35,7 +35,7 @@ public class ServiceFactory {
         } else if (serviceType.equals(TOPIC)) {
             awsService = TopicService.getInstance();
         } else {
-            LOG.warn("The type: " + serviceType.getKey() + " don't support tagging") ;
+            LOG.warn("Service " + serviceType.getKey() + " is not implemented") ;
         }
         return awsService;
     }

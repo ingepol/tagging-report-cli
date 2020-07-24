@@ -1,27 +1,22 @@
 package org.globant.model;
 
-import org.apache.commons.lang3.StringUtils;
 import org.globant.enums.CreatedBy;
 import org.globant.enums.TypesAws;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static org.globant.enums.TypesAws.DATABASE;
 
 public class ResourceReport {
     private final TypesAws type;
     private final String name;
     private final String id;
 
-    private CreatedBy create = CreatedBy.CUSTOM;
-    private Integer classic;
-    private Integer modern;
     private List<TagReport> tags = Collections.emptyList();
     private List<String> missingTags = Collections.emptyList();
+    private CreatedBy createdBy = CreatedBy.CUSTOM;
+    private Integer classicCoverage;
+    private Integer modernCoverage;
 
     private ResourceReport(TypesAws type, String name, String id) {
         this.type = type;
@@ -57,28 +52,28 @@ public class ResourceReport {
         return id;
     }
 
-    public CreatedBy getCreate() {
-        return create;
+    public CreatedBy getCreatedBy() {
+        return createdBy;
     }
 
-    public Integer getClassic() {
-        return classic;
+    public Integer getClassicCoverage() {
+        return classicCoverage;
     }
 
-    public Integer getModern() {
-        return modern;
+    public Integer getModernCoverage() {
+        return modernCoverage;
     }
 
-    public void setCreate(CreatedBy create) {
-        this.create = create;
+    public void setCreatedBy(CreatedBy createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public void setClassic(Integer classic) {
-        this.classic = classic;
+    public void setClassicCoverage(Integer classicCoverage) {
+        this.classicCoverage = classicCoverage;
     }
 
-    public void setModern(Integer modern) {
-        this.modern = modern;
+    public void setModernCoverage(Integer modernCoverage) {
+        this.modernCoverage = modernCoverage;
     }
 
     public void setTags(List<TagReport> tags) {
@@ -123,7 +118,7 @@ public class ResourceReport {
         return (type, name) -> new ResourceReport(
                     type,
                     name,
-                    type.getArn().apply(region).apply(account).apply(name)
+                    type.getId().apply(region).apply(account).apply(name)
             );
     }
 
@@ -135,7 +130,7 @@ public class ResourceReport {
         return region -> account -> type -> name -> new ResourceReport(
                 type,
                 name,
-                type.getArn().apply(region).apply(account).apply(name)
+                type.getId().apply(region).apply(account).apply(name)
         );
     }
 
@@ -161,9 +156,9 @@ public class ResourceReport {
                 "type=" + type +
                 ", name='" + name + '\'' +
                 ", id='" + id + '\'' +
-                ", create=" + create +
-                ", classic=" + classic +
-                ", modern=" + modern +
+                ", create=" + createdBy +
+                ", classic=" + classicCoverage +
+                ", modern=" + modernCoverage +
                 ", tags=" + tags +
                 ", missingTags=" + missingTags +
                 '}';
